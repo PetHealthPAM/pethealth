@@ -1,28 +1,31 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, ScrollView } from "react-native";
-import { FontAwesome } from '@expo/vector-icons';
+import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, ScrollView, Alert } from "react-native";
 import Fonts from "../../utils/Fonts";
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { useState } from "react";
 import { auth } from "../../config/firebaseConfig";
 
-
-export default function Login({navigation}) {
+export default function Login({ navigation }) {
 
   const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
+  const [senha, setSenha] = useState('');
 
-    const handleLogin = () => {
-
-        signInWithEmailAndPassword( auth ,email, senha)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                navigation.navigate('TabBar');
-            })
-            .catch((error) => {
-                const errorMessage = error.message;
-               
-            });
-    };
+  const handleLogin = () => {
+    signInWithEmailAndPassword(auth, email, senha)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        if (user.emailVerified) {
+          console.log(user);
+          setEmail("");
+          setSenha("");
+          navigation.navigate("TabBar");
+        } else {
+          Alert.alert("email ainda nao verificado!")
+        }
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+      });
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -47,6 +50,11 @@ export default function Login({navigation}) {
           value={senha}
           onChangeText={setSenha}
         />
+
+        <TouchableOpacity onPress={() => navigation.navigate("Recuperarsenha")}>
+          <Text style={styles.recsenha}>Esqueceu sua senha?</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
@@ -116,8 +124,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
-    backgroundColor:'#fff'
+    backgroundColor: '#fff'
   },
+
+  recsenha: {
+    color:'#7E57C2'
+  },
+
   button: {
     height: 50,
     backgroundColor: '#7E57C2',

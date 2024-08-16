@@ -13,6 +13,7 @@ import Perfil from '../screens/appScreens/perfil';
 import { StyleSheet } from 'react-native';
 import Fonts from '../utils/Fonts';
 import { Ionicons } from '@expo/vector-icons';
+import Recuperarsenha from '../screens/authentication/recuperarsenha/Recuperarsenha';
 
 
 const Stack = createStackNavigator();
@@ -26,6 +27,7 @@ export default function Routes() {
             <Stack.Screen name="Inicial" component={Inicial} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Cadastro" component={Cadastro} />
+            <Stack.Screen name="Recuperarsenha" component={Recuperarsenha} />
             <Stack.Screen name="TabBar" component={TabBar} />
 
         </Stack.Navigator>

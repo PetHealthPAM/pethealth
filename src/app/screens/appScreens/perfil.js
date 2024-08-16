@@ -1,47 +1,89 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, FlatList, Alert, Modal, Button } from 'react-native';
 import { AntDesign, Feather, Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { auth, db } from '../../config/firebaseConfig';
+import { doc, getDoc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 
 
-export default function Perfil() {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredData, setFilteredData] = useState([]);
-    const [userName, setUserName] = useState('Nome do Usuário');
-    const [profileImage, setProfileImage] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [newUserName, setNewUserName] = useState(userName);
+export default function Perfil({ navigation }) {
 
-    const handleSearch = (query) => {
-        setSearchQuery(query);
-        setFilteredData(
-            searchData.filter((item) =>
-                item.title.toLowerCase().includes(query.toLowerCase())
-            )
-        );
-    };
+    const [nomeUser, setNomeUser] = useState('');
+    const [image, setImage] = useState(null);
+    const [emailUser, setEmailUser] = useState('');
+    const [userDoc, setUserDoc] = useState(null);
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        });
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const user = auth.currentUser;
+            if (user) {
+                const userDoc = doc(db, "Users", user.uid);
+                const unsubscribe = onSnapshot(userDoc, (doc) => {
+                    if (doc.exists()) {
+                        const userData = doc.data();
+                        setNomeUser(userData.nome);
+                        setEmailUser(userData.email);
+                        setImage(userData.imageURL);
+                    } else {
+                        console.log("No such document!");
+                    }
+                });
+                setUserDoc(userDoc);
+                return () => unsubscribe();
+            }
+        };
 
-        if (!result.canceled) {
-            setProfileImage(result.assets[0].uri);
+        fetchUserData();
+    }, []);
+
+    const saveImageURLToFirestore = async (userId, imageURL) => {
+        try {
+          const userRef = doc(db, 'Users', userId);
+          const docSnap = await getDoc(userRef);
+          if (docSnap.exists()) {
+            await updateDoc(userRef, {
+              imageURL: imageURL
+            });
+          } else {
+            await setDoc(userRef, {
+              imageURL: imageURL
+            });
+          }
+          console.log('URL da imagem salva com sucesso no Firestore.');
+        } catch (error) {
+          console.error('Erro ao salvar a URL da imagem no Firestore:', error);
         }
-    };
+      };
 
-    const handleEditProfile = () => {
-        setIsModalVisible(true);
-    };
-
-    const handleSave = () => {
-        setUserName(newUserName);
-        setIsModalVisible(false);
-    };
+      const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+        console.log(result);
+        if (!result.canceled) {
+          setImage(result.assets[0].uri);
+          const userId = auth.currentUser.uid;
+          await saveImageURLToFirestore(userId, result.assets[0].uri);
+        }
+      };
+    
+      const handleLogout = () => {
+        signOut(auth)
+          .then(() => {
+            // Usuário desconectado com sucesso
+            Alert.alert("Você foi desconectado com sucesso.");
+            navigation.navigate('Login'); // Redireciona para a tela de login ou qualquer outra tela desejada
+          })
+          .catch((error) => {
+            // Ocorreu um erro ao tentar sair
+            console.error("Erro ao sair:", error);
+            Alert.alert("Erro ao sair. Tente novamente.");
+          });
+      };
 
     return (
         <View style={styles.container}>
@@ -49,31 +91,23 @@ export default function Perfil() {
                 <TextInput
                     style={styles.searchBar}
                     placeholder="Pesquisar..."
-                    value={searchQuery}
-                    onChangeText={handleSearch}
                 />
                 <TouchableOpacity style={styles.favoritesButton} >
                     <AntDesign name="hearto" size={30} color="#fff" style={{ marginTop: 35 }} />
                 </TouchableOpacity>
             </View>
-            {searchQuery.length > 0 && (
-                <FlatList
-                    data={filteredData}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity>
-                            <Text style={styles.searchResult}>{item.title}</Text>
-                        </TouchableOpacity>
-                    )}
-                />
-            )}
+
             <Text style={styles.title}>Perfil</Text>
             <View style={styles.profileContainer}>
                 <TouchableOpacity onPress={pickImage}>
-                    <Image source={profileImage ? { uri: profileImage } : require('../../../../assets/img/default-profile.jpg')} style={styles.profileImage} />
+                {image ? (
+                <Image source={{ uri: image }} style={styles.profileImage} />
+              ) : ( 
+                <Image source={require('../../../../assets/img/default-profile.jpg')} style={styles.profileImage} />
+              )}
                 </TouchableOpacity>
                 <View style={styles.profileDetails}>
-                    <Text style={styles.userName}>{userName}</Text>
+                    <Text style={styles.userName}>{nomeUser}</Text>
                     <TouchableOpacity >
                         <Feather name="edit" size={24} color="#000" />
                     </TouchableOpacity>
@@ -88,30 +122,13 @@ export default function Perfil() {
                     <Ionicons name="paw-outline" size={24} color="#000" />
                     <Text style={styles.settingText}>Meus Pets</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.settingItem}>
+                <TouchableOpacity style={styles.settingItem} onPress={handleLogout}>
                     <Ionicons name="exit-outline" size={24} color="#000" />
                     <Text style={styles.settingText}>Sair</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Modal para editar informações pessoais */}
-            <Modal visible={isModalVisible} transparent={true}>
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Editar Informações Pessoais</Text>
-                        <TextInput
-                            style={styles.modalInput}
-                            value={newUserName}
-                            onChangeText={setNewUserName}
-                            placeholder="Digite o novo nome"
-                        />
-                        <Button title="Salvar" onPress={handleSave} />
-                        <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
-                            <Text style={styles.closeText}>Cancelar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+         
         </View>
     );
 }
