@@ -83,6 +83,12 @@ export default function Cadastro({ navigation }) {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
+
+        <TouchableOpacity>
+          <Image style={styles.imgvoltar} source={require('../../../../assets/img/voltar.png')} />
+          <Text style={styles.txtvoltar}>Voltar</Text>
+        </TouchableOpacity>
+
         <View style={styles.containerlogo}>
           <Image source={require("../../../../assets/img/logoroxa.png")} style={styles.logo} />
         </View>
@@ -150,21 +156,38 @@ export default function Cadastro({ navigation }) {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#FFF7ED",
   },
+
   container: {
-    justifyContent: "center",
-    backgroundColor: "#FFF7ED",
+    padding: 20,
   },
+  imgvoltar:{
+    height:40,
+    width:40,
+    resizeMode:'contain',
+
+  },
+
+  txtvoltar: {
+    fontFamily: Fonts['poppins-black'],
+    fontSize: 16,
+    color: '#7E57C2',
+  },
+
   containerlogo: {
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+  containervoltar: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontFamily: Fonts['poppins-black'],
     marginBottom: 10,
     alignItems: "baseline",
   },
@@ -175,7 +198,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   input: {
-    width: 320,
+    width: 360,
     height: 50,
     borderWidth: 1,
     borderColor: "#B5B5B5",
@@ -183,6 +206,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
     backgroundColor: "#fff",
+
   },
   button: {
     width: "100%",

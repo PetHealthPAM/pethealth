@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+        
     },
     topContainer: {
         width: '100%',
@@ -170,8 +171,9 @@ const styles = StyleSheet.create({
     profileContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         marginBottom: 20,
+        marginHorizontal:20,
     },
     profileImage: {
         width: 100,

@@ -39,6 +39,14 @@ export default function Login() {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
+
+        <TouchableOpacity onPress={() => navigation.navigate("Inicial")}>
+          <View style={styles.containervoltar}>
+            <Image source={require('../../../../assets/img/voltar.png')} style={styles.BNTvoltar} />
+            <Text style={styles.txtvoltar}> Voltar </Text>
+          </View>
+        </TouchableOpacity>
+
         <View style={styles.containlogo}>
           <Image source={require('../../../../assets/img/logoroxa.png')} style={styles.logo} />
         </View>
@@ -87,12 +95,14 @@ export default function Login() {
         </View>
       </View>
 
-      {loading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#7E57C2" />
-        </View>
-      )}
-    </ScrollView>
+      {
+        loading && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#7E57C2" />
+          </View>
+        )
+      }
+    </ScrollView >
   );
 }
 
@@ -103,15 +113,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF7ED',
   },
   container: {
-    padding: 20,
+    paddingHorizontal: 20,
   },
+
+   BNTvoltar: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+    marginLeft: 5,
+  },
+  
   containlogo: {
     alignItems: 'center'
   },
+
+ 
+
+  txtvoltar: {
+    fontFamily: Fonts['poppins-black'],
+    fontSize: 16,
+    color: '#7E57C2',
+  },
+
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontFamily: Fonts['poppins-black'],
+    marginBottom: 10,
   },
   logo: {
     width: 250,
@@ -130,7 +157,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   recsenha: {
-    color:'#7E57C2'
+    color: '#7E57C2'
   },
   button: {
     height: 50,
