@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "pethealt",
-    "slug": "pethealt",
+    "name": "PetHealth",
+    "slug": "PetHealth",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

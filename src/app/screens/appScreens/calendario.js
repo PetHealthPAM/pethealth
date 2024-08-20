@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, Modal, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, Modal, TextInput } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { AntDesign, Feather } from '@expo/vector-icons';
-
 
 export default function Calendario() {
     const [selectedDate, setSelectedDate] = useState('');
@@ -11,11 +10,10 @@ export default function Calendario() {
     const [eventName, setEventName] = useState('');
     const today = new Date().toISOString().split('T')[0];
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredData, setFilteredData] = useState([]);
 
     const handleSearch = (query) => {
         setSearchQuery(query);
-        // You can customize search data and logic here
+        // Implement your search logic here
     };
 
     const addEvent = () => {
@@ -27,6 +25,18 @@ export default function Calendario() {
         } else {
             Alert.alert('Erro', 'O nome do evento não pode ser vazio.');
         }
+    };
+
+    const confirmRemoveEvent = (eventTitle) => {
+        Alert.alert(
+            'Remover Evento',
+            'Você tem certeza que deseja remover este evento?',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                { text: 'Remover', onPress: () => removeEvent(eventTitle), style: 'destructive' },
+            ],
+            { cancelable: true }
+        );
     };
 
     const removeEvent = (eventTitle) => {
@@ -41,25 +51,25 @@ export default function Calendario() {
     const renderEvent = ({ item }) => (
         <View style={styles.eventContainer}>
             <Text style={styles.eventText}>{item.title} - {item.date}</Text>
-            <TouchableOpacity onPress={() => removeEvent(item.title)}>
-                <Text style={styles.removeEventText}>Remover</Text>
+            <TouchableOpacity onPress={() => confirmRemoveEvent(item.title)}>
+                <Feather name="trash-2" size={24} color="red" />
             </TouchableOpacity>
         </View>
     );
 
-    const customMarkedDates = {};
-    customMarkedDates[today] = { textColor: '#593C9D', startingDay: true, endingDay: true, color: '#593C9D' };
-
-    const renderOrangeDays = () => {
-        let dates = {};
-        for (let i = 1; i <= 31; i++) {
-            const day = `${today.slice(0, 8)}${i < 10 ? '0' : ''}${i}`;
-            if (day !== today) {
-                dates[day] = { marked: true, dotColor: '#F49B42' };
-            }
-        }
-        return dates;
+    const customMarkedDates = {
+        [today]: { selected: true, selectedColor: '#593C9D' },
     };
+
+    // Mark dates with events
+    events.forEach(event => {
+        customMarkedDates[event.date] = {
+            marked: true,
+            dotColor: '#F49B42',
+            selected: event.date === today, // Ensure the selectedColor is shown for today's date
+            selectedColor: event.date === today ? '#593C9D' : undefined,
+        };
+    });
 
     return (
         <View style={styles.container}>
@@ -76,7 +86,7 @@ export default function Calendario() {
             </View>
             <Calendar
                 onDayPress={handleDayPress}
-                markedDates={{ ...customMarkedDates, ...renderOrangeDays() }}
+                markedDates={customMarkedDates}
                 theme={{
                     arrowColor: '#593C9D',
                     monthTextColor: '#593C9D',
@@ -109,8 +119,12 @@ export default function Calendario() {
                         onChangeText={setEventName}
                     />
                     <View style={styles.buttonContainer}>
-                        <Button title="Adicionar" onPress={addEvent} />
-                        <Button title="Cancelar" color="red" onPress={() => setModalVisible(false)} />
+                        <TouchableOpacity style={styles.modalButton} onPress={addEvent}>
+                            <Text style={styles.modalButtonText}>Adicionar</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.modalButton, { backgroundColor: 'red' }]} onPress={() => setModalVisible(false)}>
+                            <Text style={styles.modalButtonText}>Cancelar</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </Modal>
@@ -156,9 +170,6 @@ const styles = StyleSheet.create({
     eventText: {
         fontSize: 16,
     },
-    removeEventText: {
-        color: 'red',
-    },
     eventList: {
         marginTop: 20,
     },
@@ -193,5 +204,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '80%',
+    },
+    modalButton: {
+        backgroundColor: '#593C9D',
+        padding: 10,
+        borderRadius: 5,
+        width: '45%',
+        alignItems: 'center',
+    },
+    modalButtonText: {
+        color: 'white',
+        fontSize: 16,
     },
 });
