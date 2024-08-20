@@ -154,11 +154,12 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         paddingHorizontal: 15,
         marginRight: 15,
-        marginTop: 30,
+        marginTop: 25,
     },
     favoritesButton: {
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom: 10,
     },
     title: {
         fontSize: 28,

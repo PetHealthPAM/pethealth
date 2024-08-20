@@ -8,6 +8,7 @@ import {
   TextInput,
   Alert,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import Fonts from "../../utils/Fonts";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
@@ -15,20 +16,20 @@ import { auth, db } from "../../config/firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
 import Toast from 'react-native-toast-message';
 
-export default function Cadastro({ navigation }) { // Corrigido para acessar navigation via props
-
-
-
+export default function Cadastro({ navigation }) {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [csenha, setCsenha] = useState("");
+  const [loading, setLoading] = useState(false); // Estado para controlar o carregamento
 
   const handleCadastro = () => {
     if (senha !== csenha) {
       Alert.alert("As senhas não coincidem.");
       return;
     }
+
+    setLoading(true); // Inicia o carregamento
 
     createUserWithEmailAndPassword(auth, email, senha)
       .then(async (userCredential) => {
@@ -48,6 +49,7 @@ export default function Cadastro({ navigation }) { // Corrigido para acessar nav
 
         sendEmailVerification(user)
           .then(() => {
+            setLoading(false); // Para o carregamento
             Toast.show({
               type: 'success',
               text1: 'Verifique seu Email',
@@ -55,24 +57,26 @@ export default function Cadastro({ navigation }) { // Corrigido para acessar nav
             });
           })
           .catch((error) => {
+            setLoading(false); // Para o carregamento
             const errorMessage = error.message;
             console.error("Erro ao enviar e-mail de verificação:", error);
             Toast.show({
               type: 'error',
               text1: 'Erro',
               text2: errorMessage,
-          });
+            });
           });
 
         navigation.navigate('Login');
       })
       .catch((error) => {
+        setLoading(false); // Para o carregamento
         const errorMessage = error.message;
         Toast.show({
           type: 'error',
           text1: 'Erro',
           text2: errorMessage,
-      });
+        });
       });
   };
 
@@ -88,8 +92,8 @@ export default function Cadastro({ navigation }) { // Corrigido para acessar nav
         <View>
           <TextInput
             style={styles.input}
-            placeholder="Nome"
-            keyboardType="default" // Corrigido de "name" para "default"
+            placeholder="Nome e Sobrenome"
+            keyboardType="default"
             value={nome}
             onChangeText={setNome}
           />
@@ -103,20 +107,20 @@ export default function Cadastro({ navigation }) { // Corrigido para acessar nav
           <TextInput
             style={styles.input}
             placeholder="Senha"
-            secureTextEntry // Adicionado para ocultar a senha
+            secureTextEntry
             value={senha}
             onChangeText={setSenha}
           />
           <TextInput
             style={styles.input}
             placeholder="Confirmar Senha"
-            secureTextEntry // Adicionado para ocultar a senha
+            secureTextEntry
             value={csenha}
             onChangeText={setCsenha}
           />
         </View>
         <View style={styles.buttom_contain}>
-          <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+          <TouchableOpacity style={styles.button} onPress={handleCadastro} disabled={loading}>
             <Text style={styles.buttonText}>Cadastrar</Text>
           </TouchableOpacity>
         </View>
@@ -133,6 +137,12 @@ export default function Cadastro({ navigation }) { // Corrigido para acessar nav
           </TouchableOpacity>
         </View>
       </View>
+
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#7E57C2" />
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -227,5 +237,11 @@ const styles = StyleSheet.create({
   logogoogle: {
     height: 30,
     width: 30,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

@@ -139,12 +139,12 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         paddingHorizontal: 15,
         marginRight: 15,
-        marginTop: 30,
+        marginTop: 25,
     },
     favoritesButton: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 35,
+        marginTop: 25,
     },
     eventContainer: {
         flexDirection: 'row',

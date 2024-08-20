@@ -1,29 +1,38 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, ScrollView, Alert } from "react-native";
-import Fonts from "../../utils/Fonts";
-import { signInWithEmailAndPassword } from "firebase/auth"
+import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import { auth } from "../../config/firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import Fonts from "../../utils/Fonts";
+import { useNavigation } from "@react-navigation/native";
 
-export default function Login({ navigation }) {
-
+export default function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [loading, setLoading] = useState(false); // Estado para controlar o carregamento
+  const navigation = useNavigation();
 
   const handleLogin = () => {
+    setLoading(true); // Inicia o carregamento
     signInWithEmailAndPassword(auth, email, senha)
       .then((userCredential) => {
         const user = userCredential.user;
+        setLoading(false); // Para o carregamento
         if (user.emailVerified) {
           console.log(user);
           setEmail("");
           setSenha("");
-          navigation.navigate("TabBar");
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'TabBar' }], // Substitua 'TabBar' pelo nome da sua tela inicial
+          });
         } else {
-          Alert.alert("email ainda nao verificado!")
+          Alert.alert("Email ainda não verificado!");
         }
       })
       .catch((error) => {
+        setLoading(false); // Para o carregamento
         const errorMessage = error.message;
+        Alert.alert("Erro", errorMessage);
       });
   };
 
@@ -55,7 +64,7 @@ export default function Login({ navigation }) {
           <Text style={styles.recsenha}>Esqueceu sua senha?</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 
@@ -63,17 +72,9 @@ export default function Login({ navigation }) {
           <Text style={styles.orText}>OU</Text>
         </View>
 
-        {/* Botão de Login com Google */}
         <View style={styles.contGoogle}>
-          <TouchableOpacity
-            style={styles.googleButton}
-
-          >
-            <Image
-              source={require("../../../../assets/img/google.png")}
-              style={styles.logogoogle}
-            />
-
+          <TouchableOpacity style={styles.googleButton}>
+            <Image source={require("../../../../assets/img/google.png")} style={styles.logogoogle} />
             <Text style={styles.googleButtonText}>Entrar com Google</Text>
           </TouchableOpacity>
         </View>
@@ -85,6 +86,12 @@ export default function Login({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
+
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#7E57C2" />
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -97,14 +104,10 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 20,
-
   },
   containlogo: {
     alignItems: 'center'
-
   },
-
-
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -126,11 +129,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#fff'
   },
-
   recsenha: {
     color:'#7E57C2'
   },
-
   button: {
     height: 50,
     backgroundColor: '#7E57C2',
@@ -155,7 +156,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-
   orContainer: {
     marginVertical: 20,
     alignItems: 'center',
@@ -168,14 +168,11 @@ const styles = StyleSheet.create({
   cadastroText: {
     marginTop: 20,
     color: '#7E57C2',
-
   },
-
   contGoogle: {
     justifyContent: "center",
     alignItems: "center",
   },
-
   googleButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -192,11 +189,16 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 18,
     marginLeft: 10,
-    fontFamily: Fonts["poppins-bold"]
+    fontFamily: Fonts["poppins-bold"],
   },
-
   logogoogle: {
     height: 30,
     width: 30,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
