@@ -74,18 +74,18 @@ export default function Home() {
             
             {/* Swiper */}
             <View style={styles.swiperContainer}>
-                <Swiper style={styles.wrapper} autoplay={true} showsPagination={false}>
+                <Swiper style={styles.wrapper} autoplay={false} showsPagination={false}>
                     <View style={styles.slide}>
-                        <Image source={image1} style={styles.image} />
+                        <Image source={require('../../../../assets/img/slider1.png')} style={styles.image} />
                     </View>
                     <View style={styles.slide}>
-                        <Image source={image2} style={styles.image} />
+                        <Image source={require('../../../../assets/img/slider2.png')} style={styles.image} />
                         <TouchableOpacity style={styles.touchable} onPress={btnadote}>
                             <Text style={styles.touchableText}>Adotar</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.slide}>
-                        <Image source={image3} style={styles.image} />
+                        <Image source={require('../../../../assets/img/slider3.png')} style={styles.image} />
                     </View>
                 </Swiper>
             </View>
@@ -176,25 +176,26 @@ const styles = StyleSheet.create({
     },
     touchable: {
         position: 'absolute',
-        bottom: 20,
-        backgroundColor: '#593C9D',
-        paddingVertical: 10,  
+        bottom: 35,
+        paddingVertical: 4,  
         paddingHorizontal: 25,
-        borderRadius: 30, 
+        borderRadius: 24, 
+        borderWidth:1.5,
         justifyContent: 'center',
         alignItems: 'center',
         marginLeft: 40,
+        borderColor:'#593C9D',
     },
     touchableText: {
-        color: '#FFFFFF',
-        fontSize: 16,
+        color: '#593C9D',
+        fontSize: 14,
     },
     searchBar: {
         flex: 1,
         height: 40,
         backgroundColor: '#fff',
         borderRadius: 20,
-        paddingHorizontal: 15,
+        paddingHorizontal: 14,
         marginRight: 15,
         marginTop: 25,
     },
@@ -205,7 +206,6 @@ const styles = StyleSheet.create({
     },
     swiperContainer: {
         height: 200,
-        marginVertical: 10,
     },
     wrapper: {},
     slide: {

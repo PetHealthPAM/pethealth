@@ -117,15 +117,16 @@ const styles = StyleSheet.create({
   },
 
    BNTvoltar: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     resizeMode: 'contain',
-    marginLeft: 5,
+    marginLeft: 10,
     marginTop: 30,
   },
   
   containlogo: {
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingBottom:25,
   },
 
   txtvoltar: {
@@ -137,11 +138,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontFamily: Fonts['poppins-black'],
-    marginBottom: 10,
+    marginBottom: 5,
   },
   logo: {
-    width: 250,
-    height: 250,
+    width: 220,
+    height: 120,
     resizeMode: 'contain',
     alignItems: 'center',
   },

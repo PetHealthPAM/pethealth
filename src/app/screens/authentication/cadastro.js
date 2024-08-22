@@ -81,118 +81,120 @@ export default function Cadastro({ navigation }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.container}>
+
+    <View style={styles.container}>
 
       <TouchableOpacity onPress={() => navigation.navigate("Inicial")}>
-          <View style={styles.containervoltar}>
-            <Image source={require('../../../../assets/img/voltar.png')} style={styles.BNTvoltar} />
-            <Text style={styles.txtvoltar}> Voltar </Text>
-          </View>
-        </TouchableOpacity>
+        <View style={styles.containervoltar}>
+          <Image source={require('../../../../assets/img/voltar.png')} style={styles.BNTvoltar} />
+          <Text style={styles.txtvoltar}> Voltar </Text>
+        </View>
+      </TouchableOpacity>
 
-        <View style={styles.containerlogo}>
-          <Image source={require("../../../../assets/img/logoroxa.png")} style={styles.logo} />
-        </View>
-        <View style={styles.title}>
-          <Text style={styles.title}>Cadastrar-se</Text>
-        </View>
-        <View>
-          <TextInput
-            style={styles.input}
-            placeholder="Nome e Sobrenome"
-            keyboardType="default"
-            value={nome}
-            onChangeText={setNome}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Senha"
-            secureTextEntry
-            value={senha}
-            onChangeText={setSenha}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirmar Senha"
-            secureTextEntry
-            value={csenha}
-            onChangeText={setCsenha}
-          />
-        </View>
-        <View style={styles.buttom_contain}>
-          <TouchableOpacity style={styles.button} onPress={handleCadastro} disabled={loading}>
-            <Text style={styles.buttonText}>Cadastrar</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.orContainer}>
-          <Text style={styles.orText}>OU</Text>
-        </View>
-        <View style={styles.contGoogle}>
-          <TouchableOpacity style={styles.googleButton}>
-            <Image
-              source={require("../../../../assets/img/google.png")}
-              style={styles.logogoogle}
-            />
-            <Text style={styles.googleButtonText}>Entrar com Google</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.containerlogo}>
+        <Image source={require("../../../../assets/img/logoroxa.png")} style={styles.logo} />
       </View>
+      <View style={styles.title}>
+        <Text style={styles.title}>Cadastrar-se</Text>
+      </View>
+      <View>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome e Sobrenome"
+          keyboardType="default"
+          value={nome}
+          onChangeText={setNome}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Senha"
+          secureTextEntry
+          value={senha}
+          onChangeText={setSenha}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirmar Senha"
+          secureTextEntry
+          value={csenha}
+          onChangeText={setCsenha}
+        />
+      </View>
+      <View style={styles.buttom_contain}>
+        <TouchableOpacity style={styles.button} onPress={handleCadastro} disabled={loading}>
+          <Text style={styles.buttonText}>Cadastrar</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.orContainer}>
+
+        <Text style={styles.orText}>OU</Text>
+
+      </View>
+      <View style={styles.contGoogle}>
+        <TouchableOpacity style={styles.googleButton}>
+          <Image
+            source={require("../../../../assets/img/google.png")}
+            style={styles.logogoogle}
+          />
+          <Text style={styles.googleButtonText}>Entrar com Google</Text>
+        </TouchableOpacity>
+      </View>
+
 
       {loading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color="#7E57C2" />
         </View>
       )}
-    </ScrollView>
+    </View>
   );
 }
 
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    backgroundColor: "#FFF7ED",
-  },
+
 
   container: {
     padding: 20,
+    flexGrow: 1,
+    backgroundColor: "#FFF7ED"
   },
-  
+
   imgvoltar: {
-    height: 40,
-    width: 40,
+    height: 30,
+    width: 30,
     resizeMode: 'contain',
-    marginTop: 10,
+    
   },
 
   BNTvoltar: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     resizeMode: 'contain',
     marginTop: 10,
+    marginLeft: 10,
   },
 
   txtvoltar: {
     fontFamily: Fonts['poppins-black'],
     fontSize: 16,
     color: '#7E57C2',
-    marginTop: 5, 
-    textAlign: 'left', 
+    marginTop: 5,
+    textAlign: 'left',
   },
 
   containervoltar: {
     justifyContent: 'center',
     alignItems: 'flex-start',
-    marginBottom: 20, 
-    marginTop: 10,
+    marginBottom: 10,
+    marginTop: 5,
   },
 
   containerlogo: {
@@ -202,19 +204,19 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontFamily: Fonts['poppins-black'],
     marginBottom: 5,
     alignItems: "baseline",
   },
-  
+
   logo: {
-    width: 263,
-    height: 126,
+    width: 220,
+    height: 120,
     resizeMode: "contain",
     marginBottom: 25,
   },
-  
+
   input: {
     width: 'auto',
     height: 50,
@@ -225,7 +227,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "#fff",
   },
-  
+
   button: {
     width: "100%",
     height: 50,
@@ -233,37 +235,38 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 5,
-    marginTop: 20,
+    marginTop: 15,
   },
-  
+
   buttom_contain: {
     justifyContent: "center",
     alignItems: "center",
   },
-  
+
   buttonText: {
     color: "#fff",
     fontSize: 18,
     fontFamily: Fonts["poppins-regular"],
   },
-  
+
   orContainer: {
-    marginVertical: 20,
+    marginVertical: 10,
     justifyContent: "center",
     alignItems: "center",
+    
   },
-  
+
   orText: {
     fontSize: 18,
     color: "#7E57C2",
     fontFamily: Fonts["poppins-bold"],
   },
-  
+
   contGoogle: {
     justifyContent: "center",
     alignItems: "center",
   },
-  
+
   googleButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -276,19 +279,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: 240,
   },
-  
+
   googleButtonText: {
     color: "#000",
     fontSize: 18,
     marginLeft: 10,
     fontFamily: Fonts['poppins-black'],
   },
-  
+
   logogoogle: {
     height: 30,
     width: 30,
   },
-  
+
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
