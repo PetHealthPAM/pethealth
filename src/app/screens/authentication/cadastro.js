@@ -84,9 +84,11 @@ export default function Cadastro({ navigation }) {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
 
-        <TouchableOpacity>
-          <Image style={styles.imgvoltar} source={require('../../../../assets/img/voltar.png')} />
-          <Text style={styles.txtvoltar}>Voltar</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("Inicial")}>
+          <View style={styles.containervoltar}>
+            <Image source={require('../../../../assets/img/voltar.png')} style={styles.BNTvoltar} />
+            <Text style={styles.txtvoltar}> Voltar </Text>
+          </View>
         </TouchableOpacity>
 
         <View style={styles.containerlogo}>
@@ -153,6 +155,7 @@ export default function Cadastro({ navigation }) {
   );
 }
 
+
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
@@ -162,43 +165,58 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
   },
-  imgvoltar:{
-    height:40,
-    width:40,
-    resizeMode:'contain',
+  
+  imgvoltar: {
+    height: 40,
+    width: 40,
+    resizeMode: 'contain',
+    marginTop: 10,
+  },
 
+  BNTvoltar: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+    marginTop: 10,
   },
 
   txtvoltar: {
     fontFamily: Fonts['poppins-black'],
     fontSize: 16,
     color: '#7E57C2',
+    marginTop: 5, 
+    textAlign: 'left', 
+  },
+
+  containervoltar: {
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    marginBottom: 20, 
+    marginTop: 10,
   },
 
   containerlogo: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
-
-  containervoltar: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: 10,
   },
 
   title: {
     fontSize: 24,
     fontFamily: Fonts['poppins-black'],
-    marginBottom: 10,
+    marginBottom: 5,
     alignItems: "baseline",
   },
+  
   logo: {
     width: 263,
     height: 126,
     resizeMode: "contain",
     marginBottom: 25,
   },
+  
   input: {
-    width: 360,
+    width: 'auto',
     height: 50,
     borderWidth: 1,
     borderColor: "#B5B5B5",
@@ -206,8 +224,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
     backgroundColor: "#fff",
-
   },
+  
   button: {
     width: "100%",
     height: 50,
@@ -217,29 +235,35 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 20,
   },
+  
   buttom_contain: {
     justifyContent: "center",
     alignItems: "center",
   },
+  
   buttonText: {
     color: "#fff",
     fontSize: 18,
     fontFamily: Fonts["poppins-regular"],
   },
+  
   orContainer: {
     marginVertical: 20,
     justifyContent: "center",
     alignItems: "center",
   },
+  
   orText: {
     fontSize: 18,
     color: "#7E57C2",
     fontFamily: Fonts["poppins-bold"],
   },
+  
   contGoogle: {
     justifyContent: "center",
     alignItems: "center",
   },
+  
   googleButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -252,16 +276,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: 240,
   },
+  
   googleButtonText: {
     color: "#000",
     fontSize: 18,
     marginLeft: 10,
-    fontFamily: Fonts["poppins-regular"],
+    fontFamily: Fonts['poppins-black'],
   },
+  
   logogoogle: {
     height: 30,
     width: 30,
   },
+  
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

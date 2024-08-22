@@ -121,13 +121,12 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: 'contain',
     marginLeft: 5,
+    marginTop: 30,
   },
   
   containlogo: {
     alignItems: 'center'
   },
-
- 
 
   txtvoltar: {
     fontFamily: Fonts['poppins-black'],
@@ -177,6 +176,7 @@ const styles = StyleSheet.create({
     marginLeft: 37,
     marginTop: 5,
     fontSize: 16,
+    marginBottom: 30,
   },
   buttonText: {
     color: '#fff',

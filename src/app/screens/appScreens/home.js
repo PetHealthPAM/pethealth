@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, FlatList, ScrollView } from 'react-native';
 import Swiper from 'react-native-swiper';
-
 import { AntDesign } from '@expo/vector-icons';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 // Importando imagens do slider
 import image1 from '../../../../assets/img/slider1.png';
@@ -13,13 +13,14 @@ import image3 from '../../../../assets/img/slider3.png';
 const API_KEY_DOG = 'live_a18kGWDwOwGdBaVo228FKBjEjHpRxTFT1KCN64vg8autI0DK1fRncxBn53TQa7KL';
 const API_KEY_CAT = 'live_rlswPycwAxMFCNOEuB0Gp9gIik708ockKXnjesGMXgMHyTxeT0LlIbjet3TPQrcM'; 
 
-
 export default function Home() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredData, setFilteredData] = useState([]);
     const [pets, setPets] = useState([]);
     const [dogBreeds, setDogBreeds] = useState([]);
     const [catBreeds, setCatBreeds] = useState([]);
+
+    const navigation = useNavigation(); // Hook de navegação
 
     useEffect(() => {
         const fetchData = async () => {
@@ -49,7 +50,13 @@ export default function Home() {
         );
     };
 
+    const btnadote = () => {
+        navigation.navigate('adote'); // Navega para a tela de adoção
+    };
 
+    const btnfavoritos = () => {
+        navigation.navigate('favoritos'); // Navega para a tela de favoritos
+    };
 
     return (
         <ScrollView style={styles.container}>
@@ -60,28 +67,28 @@ export default function Home() {
                     value={searchQuery}
                     onChangeText={handleSearch}
                 />
-                <TouchableOpacity style={styles.favoritesButton} >
+                <TouchableOpacity style={styles.favoritesButton} onPress={btnfavoritos}>
                     <AntDesign name="hearto" size={30} color="#fff" />
                 </TouchableOpacity>
             </View>
             
             {/* Swiper */}
             <View style={styles.swiperContainer}>
-            <Swiper style={styles.wrapper} autoplay={true} showsPagination={false}>
-                <View style={styles.slide}>
-                    <Image source={image1} style={styles.image} />
-                </View>
-                <View style={styles.slide}>
-                    <Image source={image2} style={styles.image} />
-                    <TouchableOpacity style={styles.touchable} >
-                        <Text style={styles.touchableText}>Adotar</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.slide}>
-                    <Image source={image3} style={styles.image} />
-                </View>
-            </Swiper>
-        </View>
+                <Swiper style={styles.wrapper} autoplay={true} showsPagination={false}>
+                    <View style={styles.slide}>
+                        <Image source={image1} style={styles.image} />
+                    </View>
+                    <View style={styles.slide}>
+                        <Image source={image2} style={styles.image} />
+                        <TouchableOpacity style={styles.touchable} onPress={btnadote}>
+                            <Text style={styles.touchableText}>Adotar</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.slide}>
+                        <Image source={image3} style={styles.image} />
+                    </View>
+                </Swiper>
+            </View>
 
             {searchQuery.length > 0 && (
                 <FlatList
@@ -98,7 +105,7 @@ export default function Home() {
             <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Seus Pets</Text>
             </View>
-            <TouchableOpacity style={styles.addButton} >
+            <TouchableOpacity style={styles.addButton}>
                 <AntDesign name="pluscircleo" size={60} color="#593C9D" />
             </TouchableOpacity>
             <FlatList
@@ -264,26 +271,24 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: '#fff',
+        marginBottom: 10,
+        marginLeft: 15,
     },
     breedList: {
-        marginTop: 10,
+        marginBottom: 10,
     },
     breedItem: {
-        marginHorizontal: 10,
         alignItems: 'center',
+        marginHorizontal: 10,
     },
     breedPhoto: {
         width: 100,
         height: 100,
         borderRadius: 50,
+        marginBottom: 5,
     },
     breedName: {
+        fontSize: 12,
         color: '#fff',
-        marginTop: 5,
-    },
-    searchResult: {
-        padding: 10,
-        fontSize: 16,
-        color: '#000',
     },
 });
