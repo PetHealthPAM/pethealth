@@ -7,7 +7,6 @@ import {
   Image,
   TextInput,
   Alert,
-  ScrollView,
   ActivityIndicator,
 } from "react-native";
 import Fonts from "../../utils/Fonts";
@@ -15,13 +14,16 @@ import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/
 import { auth, db } from "../../config/firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
 import Toast from 'react-native-toast-message';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Importa a biblioteca de ícones
 
 export default function Cadastro({ navigation }) {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [csenha, setCsenha] = useState("");
-  const [loading, setLoading] = useState(false); // Estado para controlar o carregamento
+  const [loading, setLoading] = useState(false);
+  const [showSenha, setShowSenha] = useState(false); // Estado para mostrar/ocultar a senha
+  const [showCsenha, setShowCsenha] = useState(false); // Estado para mostrar/ocultar a confirmação de senha
 
   const handleCadastro = () => {
     if (senha !== csenha) {
@@ -29,7 +31,7 @@ export default function Cadastro({ navigation }) {
       return;
     }
 
-    setLoading(true); // Inicia o carregamento
+    setLoading(true);
 
     createUserWithEmailAndPassword(auth, email, senha)
       .then(async (userCredential) => {
@@ -49,7 +51,7 @@ export default function Cadastro({ navigation }) {
 
         sendEmailVerification(user)
           .then(() => {
-            setLoading(false); // Para o carregamento
+            setLoading(false);
             Toast.show({
               type: 'success',
               text1: 'Verifique seu Email',
@@ -57,7 +59,7 @@ export default function Cadastro({ navigation }) {
             });
           })
           .catch((error) => {
-            setLoading(false); // Para o carregamento
+            setLoading(false);
             const errorMessage = error.message;
             console.error("Erro ao enviar e-mail de verificação:", error);
             Toast.show({
@@ -70,7 +72,7 @@ export default function Cadastro({ navigation }) {
         navigation.navigate('Login');
       })
       .catch((error) => {
-        setLoading(false); // Para o carregamento
+        setLoading(false);
         const errorMessage = error.message;
         Toast.show({
           type: 'error',
@@ -81,9 +83,7 @@ export default function Cadastro({ navigation }) {
   };
 
   return (
-
     <View style={styles.container}>
-
       <TouchableOpacity onPress={() => navigation.navigate("Inicial")}>
         <View style={styles.containervoltar}>
           <Image source={require('../../../../assets/img/voltar.png')} style={styles.BNTvoltar} />
@@ -112,20 +112,36 @@ export default function Cadastro({ navigation }) {
           value={email}
           onChangeText={setEmail}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          secureTextEntry
-          value={senha}
-          onChangeText={setSenha}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Confirmar Senha"
-          secureTextEntry
-          value={csenha}
-          onChangeText={setCsenha}
-        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Senha"
+            secureTextEntry={!showSenha}
+            value={senha}
+            onChangeText={setSenha}
+          />
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => setShowSenha(!showSenha)}
+          >
+            <Icon name={showSenha ? "visibility" : "visibility-off"} size={24} color="#7E57C2" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirmar Senha"
+            secureTextEntry={!showCsenha}
+            value={csenha}
+            onChangeText={setCsenha}
+          />
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => setShowCsenha(!showCsenha)}
+          >
+            <Icon name={showCsenha ? "visibility" : "visibility-off"} size={24} color="#7E57C2" />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.buttom_contain}>
         <TouchableOpacity style={styles.button} onPress={handleCadastro} disabled={loading}>
@@ -133,9 +149,7 @@ export default function Cadastro({ navigation }) {
         </TouchableOpacity>
       </View>
       <View style={styles.orContainer}>
-
         <Text style={styles.orText}>OU</Text>
-
       </View>
       <View style={styles.contGoogle}>
         <TouchableOpacity style={styles.googleButton}>
@@ -147,7 +161,6 @@ export default function Cadastro({ navigation }) {
         </TouchableOpacity>
       </View>
 
-
       {loading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color="#7E57C2" />
@@ -157,14 +170,21 @@ export default function Cadastro({ navigation }) {
   );
 }
 
-
 const styles = StyleSheet.create({
-
-
   container: {
     padding: 20,
     flexGrow: 1,
     backgroundColor: "#FFF7ED"
+  },
+ 
+  inputContainer: {
+    position: 'relative',
+    marginBottom: 10,
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 15,
   },
 
   imgvoltar: {

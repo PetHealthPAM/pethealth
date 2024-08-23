@@ -20,7 +20,7 @@ export default function Home() {
     const [dogBreeds, setDogBreeds] = useState([]);
     const [catBreeds, setCatBreeds] = useState([]);
 
-    const navigation = useNavigation(); // Hook de navegação
+    const navigation = useNavigation(); 
 
     useEffect(() => {
         const fetchData = async () => {
@@ -55,8 +55,8 @@ export default function Home() {
     };
 
     const btnfavoritos = () => {
-        navigation.navigate('Favoritos'); // O nome deve corresponder exatamente ao nome da tela no navegador
-      };
+        navigation.navigate('Favoritos'); // Navega para a tela de favoritos
+    };
 
     return (
         <ScrollView style={styles.container}>

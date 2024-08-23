@@ -116,7 +116,11 @@ export default function Perfil({ navigation }) {
     signOut(auth)
       .then(() => {
         Alert.alert("Você foi desconectado com sucesso.");
-        navigation.navigate("Login");
+  
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
       })
       .catch((error) => {
         console.error("Erro ao sair:", error);

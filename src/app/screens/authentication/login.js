@@ -4,11 +4,13 @@ import { auth } from "../../config/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import Fonts from "../../utils/Fonts";
 import { useNavigation } from "@react-navigation/native";
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Adicione isso para os ícones
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false); // Estado para controlar o carregamento
+  const [showPassword, setShowPassword] = useState(false); // Estado para controlar a visibilidade da senha
   const navigation = useNavigation();
 
   const handleLogin = () => {
@@ -60,13 +62,21 @@ export default function Login() {
           value={email}
           onChangeText={setEmail}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          secureTextEntry
-          value={senha}
-          onChangeText={setSenha}
-        />
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Senha"
+            secureTextEntry={!showPassword}
+            value={senha}
+            onChangeText={setSenha}
+          />
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Icon name={showPassword ? "visibility" : "visibility-off"} size={24} color="#7E57C2" />
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity onPress={() => navigation.navigate("Recuperarsenha")}>
           <Text style={styles.recsenha}>Esqueceu sua senha?</Text>
@@ -116,7 +126,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-   BNTvoltar: {
+  BNTvoltar: {
     width: 30,
     height: 30,
     resizeMode: 'contain',
@@ -155,6 +165,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
     backgroundColor: '#fff'
+  },
+  passwordContainer: {
+    position: 'relative',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 15,
   },
   recsenha: {
     color: '#7E57C2'
