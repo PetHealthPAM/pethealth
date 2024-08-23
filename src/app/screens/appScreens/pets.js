@@ -1,122 +1,99 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, Image, TouchableOpacity, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// src/screens/appScreens/pets.js
 
-export default function MeusPets() {
-    const [pets, setPets] = useState([]);
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { auth, db } from '../../config/firebaseConfig';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import Fonts from "../../utils/Fonts";
 
-    useEffect(() => {
-        const loadPets = async () => {
-            try {
-                const storedPets = await AsyncStorage.getItem('pets');
-                if (storedPets) {
-                    setPets(JSON.parse(storedPets));
-                }
-            } catch (error) {
-                console.error('Erro ao carregar os pets:', error);
-            }
-        };
+export default function Pets({ navigation }) { // Receba a prop de navegação
+  const [pets, setPets] = useState([]);
 
-        loadPets();
-    }, []);
-
-    const handleRemovePet = async (id) => {
-        Alert.alert(
-            'Confirmar Exclusão',
-            'Tem certeza de que deseja remover este pet?',
-            [
-                { text: 'Cancelar', style: 'cancel' },
-                { text: 'OK', onPress: async () => {
-                    try {
-                        const updatedPets = pets.filter(pet => pet.id !== id);
-                        await AsyncStorage.setItem('pets', JSON.stringify(updatedPets));
-                        setPets(updatedPets);
-                        Alert.alert('Sucesso', 'Pet removido com sucesso!');
-                    } catch (error) {
-                        console.error('Erro ao remover o pet:', error);
-                        Alert.alert('Erro', 'Não foi possível remover o pet.');
-                    }
-                } },
-            ]
+  useEffect(() => {
+    const fetchPets = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const q = query(
+          collection(db, 'Pets'),
+          where('ownerId', '==', user.uid)
         );
+        const querySnapshot = await getDocs(q);
+        const petsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setPets(petsData);
+      }
     };
 
-    const renderPetItem = ({ item }) => {
-        const { id, species, breed, name, image } = item;
-        return (
-            <View style={styles.petItem}>
-                <Image source={image} style={styles.petImage} />
-                <View style={styles.petDetails}>
-                    <Text style={styles.petName}>{name}</Text>
-                    <Text style={styles.petInfo}>Espécie: {species === 'dog' ? 'Cachorro' : 'Gato'}</Text>
-                    <Text style={styles.petInfo}>Raça: {breed}</Text>
-                </View>
-                <TouchableOpacity style={styles.removeButton} onPress={() => handleRemovePet(id)}>
-                    <Text style={styles.removeButtonText}>Remover</Text>
-                </TouchableOpacity>
-            </View>
-        );
-    };
+    fetchPets();
+  }, []);
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Meus Pets</Text>
-            <FlatList
-                data={pets}
-                keyExtractor={(item) => item.id}
-                renderItem={renderPetItem}
-            />
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <View style={styles.containervoltar}>
+          <Image source={require('../../../../assets/img/voltar.png')} style={styles.BNTvoltar} />
+          <Text style={styles.txtvoltar}> Voltar </Text>
         </View>
-    );
+      </TouchableOpacity>
+
+      <Text style={styles.title}>Meus Pets</Text>
+      <FlatList
+        data={pets}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.petContainer}>
+            <Image source={{ uri: item.imageURL }} style={styles.petImage} />
+            <Text style={styles.petName}>{item.name}</Text>
+          </View>
+        )}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#f4f4f4',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-        marginTop: 50,
-    },
-    petItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-        padding: 10,
-        backgroundColor: '#fff',
-        borderRadius: 5,
-        elevation: 1,
-    },
-    petImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-    },
-    petDetails: {
-        flex: 1,
-        marginLeft: 15,
-    },
-    petName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    petInfo: {
-        fontSize: 14,
-        color: '#666',
-    },
-    removeButton: {
-        backgroundColor: '#FF4D4D',
-        padding: 10,
-        borderRadius: 5,
-    },
-    removeButtonText: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#7E57C2',
+  },
+  petContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  petImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginRight: 15,
+  },
+  petName: {
+    fontSize: 18,
+  },
+  BNTvoltar: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+    marginTop: 10,
+    marginLeft: 10,
+  },
+  txtvoltar: {
+    fontFamily: Fonts['poppins-black'],
+    fontSize: 16,
+    color: '#7E57C2',
+    marginTop: 5,
+    textAlign: 'left',
+  },
+  containervoltar: {
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+    marginTop: 5,
+  },
 });

@@ -124,6 +124,10 @@ export default function Perfil({ navigation }) {
       });
   };
 
+  const btnfavoritos = () => {
+    navigation.navigate('Favoritos'); // O nome deve corresponder exatamente ao nome da tela no navegador
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
@@ -132,9 +136,9 @@ export default function Perfil({ navigation }) {
           placeholder="Pesquisar..."
           placeholderTextColor="#B3B3B3"
         />
-        <TouchableOpacity style={styles.favoritesButton}>
-          <AntDesign name="hearto" size={30} color="#fff" />
-        </TouchableOpacity>
+       <TouchableOpacity style={styles.favoritesButton} onPress={btnfavoritos}>
+                    <AntDesign name="hearto" size={30} color="#fff" />
+                </TouchableOpacity>
       </View>
 
       <Text style={styles.title}>Perfil</Text>
@@ -172,10 +176,13 @@ export default function Perfil({ navigation }) {
           <Ionicons name="person-outline" size={24} color="#000" />
           <Text style={styles.settingText}>Informações Pessoais</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.settingItem}>
-          <Ionicons name="paw-outline" size={24} color="#000" />
-          <Text style={styles.settingText}>Meus Pets</Text>
-        </TouchableOpacity>
+        <TouchableOpacity
+  style={styles.settingItem}
+  onPress={() => navigation.navigate('Pets')}
+>
+  <Ionicons name="paw-outline" size={24} color="#000" />
+  <Text style={styles.settingText}>Meus Pets</Text>
+</TouchableOpacity>
         <TouchableOpacity style={styles.settingItem} onPress={handleLogout}>
           <Ionicons name="exit-outline" size={24} color="#000" />
           <Text style={styles.settingText}>Sair</Text>

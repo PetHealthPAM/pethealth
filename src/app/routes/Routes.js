@@ -14,6 +14,9 @@ import { StyleSheet } from 'react-native';
 import Fonts from '../utils/Fonts';
 import { Ionicons } from '@expo/vector-icons';
 import Recuperarsenha from '../screens/authentication/recuperarsenha/Recuperarsenha';
+import Pets from '../screens/appScreens/pets';
+import Favoritos from '../screens/appScreens/favoritos';
+
 
 
 const Stack = createStackNavigator();
@@ -28,6 +31,8 @@ export default function Routes() {
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Cadastro" component={Cadastro} />
             <Stack.Screen name="Recuperarsenha" component={Recuperarsenha} />
+            <Stack.Screen name="Pets" component={Pets} />
+            <Stack.Screen name="Favoritos" component={Favoritos} />
             <Stack.Screen name="TabBar" component={TabBar} />
 
         </Stack.Navigator>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, Modal, TextInput } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { AntDesign, Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Calendario() {
     const [selectedDate, setSelectedDate] = useState('');
@@ -10,6 +11,8 @@ export default function Calendario() {
     const [eventName, setEventName] = useState('');
     const today = new Date().toISOString().split('T')[0];
     const [searchQuery, setSearchQuery] = useState('');
+
+    const navigation = useNavigation();
 
     const handleSearch = (query) => {
         setSearchQuery(query);
@@ -66,7 +69,7 @@ export default function Calendario() {
         customMarkedDates[event.date] = {
             marked: true,
             dotColor: '#F49B42',
-            selected: event.date === today, // Ensure the selectedColor is shown for today's date
+            selected: event.date === today,
             selectedColor: event.date === today ? '#593C9D' : undefined,
         };
     });
@@ -80,7 +83,7 @@ export default function Calendario() {
                     value={searchQuery}
                     onChangeText={handleSearch}
                 />
-                <TouchableOpacity style={styles.favoritesButton} onPress={() => router.push('../stacks/favoritos')}>
+                <TouchableOpacity style={styles.favoritesButton} onPress={() => navigation.navigate('Favoritos')}>
                     <AntDesign name="hearto" size={30} color="#fff" />
                 </TouchableOpacity>
             </View>

@@ -55,8 +55,8 @@ export default function Home() {
     };
 
     const btnfavoritos = () => {
-        navigation.navigate('favoritos'); // Navega para a tela de favoritos
-    };
+        navigation.navigate('Favoritos'); // O nome deve corresponder exatamente ao nome da tela no navegador
+      };
 
     return (
         <ScrollView style={styles.container}>
@@ -74,7 +74,7 @@ export default function Home() {
             
             {/* Swiper */}
             <View style={styles.swiperContainer}>
-                <Swiper style={styles.wrapper} autoplay={false} showsPagination={false}>
+                <Swiper style={styles.wrapper} autoplay={true} showsPagination={false}>
                     <View style={styles.slide}>
                         <Image source={require('../../../../assets/img/slider1.png')} style={styles.image} />
                     </View>
