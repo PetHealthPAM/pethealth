@@ -16,6 +16,7 @@ import * as ImagePicker from "expo-image-picker";
 import { auth, db } from "../../config/firebaseConfig";
 import { doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
+import Fonts from "../../utils/Fonts";
 
 export default function Perfil({ navigation }) {
   const [nomeUser, setNomeUser] = useState("");
@@ -138,7 +139,6 @@ export default function Perfil({ navigation }) {
         <TextInput
           style={styles.searchBar}
           placeholder="Pesquisar..."
-          placeholderTextColor="#B3B3B3"
         />
        <TouchableOpacity style={styles.favoritesButton} onPress={btnfavoritos}>
                     <AntDesign name="hearto" size={30} color="#fff" />
@@ -203,96 +203,97 @@ export default function Perfil({ navigation }) {
         }}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              {editNameMode ? "Editar Nome" : "Editar Informações Pessoais"}
-            </Text>
-            <ScrollView>
-              <View style={styles.formGroup}>
-                <Text style={styles.formLabel}>Nome</Text>
-                <TextInput
-                  style={styles.formInput}
-                  placeholder="Nome"
-                  value={nomeUser}
-                  onChangeText={setNomeUser}
-                />
-              </View>
-              {!editNameMode && (
-                <>
-                  <View style={styles.formGroup}>
-                    <Text style={styles.formLabel}>E-mail</Text>
-                    <TextInput
-                      style={styles.formInput}
-                      placeholder="E-mail"
-                      value={emailUser}
-                      onChangeText={setEmailUser}
-                    />
-                  </View>
-                  <View style={styles.formGroup}>
-                    <Text style={styles.formLabel}>Telefone</Text>
-                    <TextInput
-                      style={styles.formInput}
-                      placeholder="Telefone"
-                      value={phone}
-                      onChangeText={setPhone}
-                    />
-                  </View>
-                  <View style={styles.formGroup}>
-                    <Text style={styles.formLabel}>Endereço</Text>
-                    <TextInput
-                      style={styles.formInput}
-                      placeholder="Endereço"
-                      value={address}
-                      onChangeText={setAddress}
-                    />
-                  </View>
-                  <View style={styles.formGroup}>
-                    <Text style={styles.formLabel}>Cidade</Text>
-                    <TextInput
-                      style={styles.formInput}
-                      placeholder="Cidade"
-                      value={city}
-                      onChangeText={setCity}
-                    />
-                  </View>
-                  <View style={styles.formGroup}>
-                    <Text style={styles.formLabel}>Estado</Text>
-                    <TextInput
-                      style={styles.formInput}
-                      placeholder="Estado"
-                      value={state}
-                      onChangeText={setState}
-                    />
-                  </View>
-                  <View style={styles.formGroup}>
-                    <Text style={styles.formLabel}>Sexo</Text>
-                    <TextInput
-                      style={styles.formInput}
-                      placeholder="Sexo"
-                      value={gender}
-                      onChangeText={setGender}
-                    />
-                  </View>
-                </>
-              )}
-              <View style={styles.modalButtons}>
-                <Button
-                  title="Cancelar"
-                  onPress={() => {
-                    setModalVisible(false);
-                    setEditNameMode(false);
-                  }}
-                  color="#FF6347" // Cor do botão "Cancelar"
-                />
-                <Button
-                  title="Salvar"
-                  onPress={saveUserInfo}
-                  color="#32CD32" // Cor do botão "Salvar"
-                />
-              </View>
-            </ScrollView>
+  <View style={styles.modalContent}>
+    <Text style={styles.modalTitle}>
+      {editNameMode ? "Editar Nome" : "Editar Informações Pessoais"}
+    </Text>
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <View style={styles.formGroup}>
+        <Text style={styles.formLabel}>Nome</Text>
+        <TextInput
+          style={styles.formInput}
+          placeholder="Nome"
+          value={nomeUser}
+          onChangeText={setNomeUser}
+        />
+      </View>
+      {!editNameMode && (
+        <>
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>E-mail</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="E-mail"
+              value={emailUser}
+              onChangeText={setEmailUser}
+            />
           </View>
-        </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>Telefone</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="Telefone"
+              value={phone}
+              onChangeText={setPhone}
+            />
+          </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>Endereço</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="Endereço"
+              value={address}
+              onChangeText={setAddress}
+            />
+          </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>Cidade</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="Cidade"
+              value={city}
+              onChangeText={setCity}
+            />
+          </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>Estado</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="Estado"
+              value={state}
+              onChangeText={setState}
+            />
+          </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.formLabel}>Sexo</Text>
+            <TextInput
+              style={styles.formInput}
+              placeholder="Sexo"
+              value={gender}
+              onChangeText={setGender}
+            />
+          </View>
+        </>
+      )}
+      <View style={styles.modalButtons}>
+        <Button
+          title="Cancelar"
+          onPress={() => {
+            setModalVisible(false);
+            setEditNameMode(false);
+          }}
+          color="gray" // Cor do botão "Cancelar"
+        />
+        <Button
+          title="Salvar"
+          onPress={saveUserInfo}
+          color="#593C9D" // Cor do botão "Salvar"
+        />
+      </View>
+    </ScrollView>
+  </View>
+</View>
+
       </Modal>
 
       {/* Modal para ver a imagem ampliada */}
@@ -316,7 +317,7 @@ export default function Perfil({ navigation }) {
             <Button
               title="Fechar"
               onPress={() => setImageModalVisible(false)}
-              color="#FF6347" // Aqui você define a cor desejada
+              color="gray" // Aqui você define a cor desejada
             />
           </View>
         </View>
@@ -348,6 +349,7 @@ const styles = StyleSheet.create({
             paddingHorizontal: 15,
             marginRight: 15,
             marginTop: 5,
+            fontFamily: Fonts["poppins-regular"],
         },
         favoritesButton: {
             justifyContent: 'center',
@@ -356,13 +358,13 @@ const styles = StyleSheet.create({
         },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontFamily: Fonts['poppins-bold'],
     marginVertical: 20,
     marginLeft: 25,
   },
   titulo2: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: Fonts['poppins-bold'],
     marginTop: 30,
     marginLeft: 15,
   },
@@ -384,7 +386,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: Fonts["poppins-regular"],
     marginRight: 10,
   },
   settingsContainer: {
@@ -400,43 +402,50 @@ const styles = StyleSheet.create({
   settingText: {
     fontSize: 18,
     marginLeft: 10,
+    fontFamily: Fonts["poppins-regular"],
   },
   modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: "80%",
-    backgroundColor: "#FFF",
-    borderRadius: 10,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  formGroup: {
-    marginBottom: 15,
-  },
-  formLabel: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  formInput: {
-    height: 40,
-    borderColor: "#DDD",
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
+  justifyContent: "center",
+  alignItems: "center",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  flex: 1, 
+},
+modalContent: {
+  width: "80%",
+  backgroundColor: "#FFF",
+  borderRadius: 10,
+  padding: 10,
+  maxHeight: '90%',
+},
+scrollViewContent: {
+  flexGrow: 1,
+},
+modalTitle: {
+  fontSize: 20,
+  fontFamily: Fonts["poppins-regular"],
+  marginBottom: 10,
+},
+formGroup: {
+  marginBottom: 15,
+  fontFamily: Fonts["poppins-regular"],
+},
+formLabel: {
+  fontSize: 16,
+  marginBottom: 5,
+  fontFamily: Fonts["poppins-regular"],
+},
+formInput: {
+  height: 40,
+  borderColor: "#DDD",
+  borderWidth: 1,
+  borderRadius: 5,
+  paddingHorizontal: 10,
+},
+modalButtons: {
+  marginTop: 20,
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+},
   imageModalContent: {
     alignItems: "center",
   },
@@ -450,7 +459,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 40,
     right: 40,
-    backgroundColor: "#000",
+    backgroundColor: "#593C9D",
     borderRadius: 20,
     padding: 10,
   },

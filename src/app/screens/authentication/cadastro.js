@@ -149,7 +149,7 @@ export default function Cadastro({ navigation }) {
         </TouchableOpacity>
       </View>
       <View style={styles.orContainer}>
-        <Text style={styles.orText}>OU</Text>
+        <Text style={styles.orText}>――  OU  ――</Text>
       </View>
       <View style={styles.contGoogle}>
         <TouchableOpacity style={styles.googleButton}>
@@ -179,7 +179,6 @@ const styles = StyleSheet.create({
  
   inputContainer: {
     position: 'relative',
-    marginBottom: 10,
   },
   eyeIcon: {
     position: 'absolute',
@@ -190,8 +189,7 @@ const styles = StyleSheet.create({
   imgvoltar: {
     height: 30,
     width: 30,
-    resizeMode: 'contain',
-    
+    resizeMode: 'contain',  
   },
 
   BNTvoltar: {
@@ -246,6 +244,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
     backgroundColor: "#fff",
+    fontFamily: Fonts["poppins-regular"],
   },
 
   button: {

@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: Fonts['poppins-black'],
     marginBottom: 20,
     color: '#7E57C2',
   },

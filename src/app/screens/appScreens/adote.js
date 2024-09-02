@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#1c1c1c', // Fundo escuro
+        backgroundColor: '#fff', // Fundo escuro
     },
     card: {
         flex: 1,

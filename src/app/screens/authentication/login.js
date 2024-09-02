@@ -87,7 +87,7 @@ export default function Login() {
         </TouchableOpacity>
 
         <View style={styles.orContainer}>
-          <Text style={styles.orText}>OU</Text>
+          <Text style={styles.orText}>――  OU  ――</Text>
         </View>
 
         <View style={styles.contGoogle}>
@@ -164,10 +164,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    fontFamily: Fonts["poppins-regular"],
   },
   passwordContainer: {
     position: 'relative',
+    fontFamily: Fonts["poppins-regular"],
   },
   eyeIcon: {
     position: 'absolute',
@@ -175,7 +177,8 @@ const styles = StyleSheet.create({
     top: 15,
   },
   recsenha: {
-    color: '#7E57C2'
+    color: '#7E57C2',
+    fontFamily: Fonts["poppins-regular"],
   },
   button: {
     height: 50,
@@ -188,6 +191,7 @@ const styles = StyleSheet.create({
   titulo: {
     fontSize: 18,
     marginTop: 20,
+    fontFamily: Fonts["poppins-regular"],
   },
   link: {
     color: '#7E57C2',
@@ -196,6 +200,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 16,
     marginBottom: 30,
+    fontFamily: Fonts["poppins-regular"],
   },
   buttonText: {
     color: '#fff',
@@ -209,7 +214,7 @@ const styles = StyleSheet.create({
   orText: {
     fontSize: 18,
     color: '#7E57C2',
-    fontWeight: 'bold',
+    fontFamily: Fonts["poppins-bold"],
   },
   cadastroText: {
     marginTop: 20,
