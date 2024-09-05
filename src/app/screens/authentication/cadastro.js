@@ -8,13 +8,14 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import Fonts from "../../utils/Fonts";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth, db } from "../../config/firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
 import Toast from 'react-native-toast-message';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Importa a biblioteca de ícones
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default function Cadastro({ navigation }) {
   const [nome, setNome] = useState("");
@@ -22,8 +23,8 @@ export default function Cadastro({ navigation }) {
   const [senha, setSenha] = useState("");
   const [csenha, setCsenha] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showSenha, setShowSenha] = useState(false); // Estado para mostrar/ocultar a senha
-  const [showCsenha, setShowCsenha] = useState(false); // Estado para mostrar/ocultar a confirmação de senha
+  const [showSenha, setShowSenha] = useState(false);
+  const [showCsenha, setShowCsenha] = useState(false);
 
   const handleCadastro = () => {
     if (senha !== csenha) {
@@ -83,7 +84,10 @@ export default function Cadastro({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled"
+    >
       <TouchableOpacity onPress={() => navigation.navigate("Inicial")}>
         <View style={styles.containervoltar}>
           <Image source={require('../../../../assets/img/voltar.png')} style={styles.BNTvoltar} />
@@ -166,7 +170,7 @@ export default function Cadastro({ navigation }) {
           <ActivityIndicator size="large" color="#7E57C2" />
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -176,7 +180,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: "#FFF7ED"
   },
- 
   inputContainer: {
     position: 'relative',
   },

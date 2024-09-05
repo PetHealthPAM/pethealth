@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, FlatList, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, FlatList, ScrollView, Alert, Modal } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { AntDesign } from '@expo/vector-icons';
 import axios from 'axios';
@@ -17,6 +17,14 @@ export default function Home() {
     const [pets, setPets] = useState([]);
     const [dogBreeds, setDogBreeds] = useState([]);
     const [catBreeds, setCatBreeds] = useState([]);
+    const [selectedPet, setSelectedPet] = useState(null); // Estado para o pet selecionado
+    const [modalVisible, setModalVisible] = useState(false); // Estado para visibilidade do modal
+
+const showPetDetails = (pet) => {
+    setSelectedPet(pet);
+    setModalVisible(true);
+};
+
 
     const navigation = useNavigation(); 
 
@@ -141,6 +149,8 @@ export default function Home() {
     const btnfavoritos = useCallback(() => {
         navigation.navigate('Favoritos');
     }, [navigation]);
+    
+    
 
     return (
         <ScrollView style={styles.container}>
@@ -151,9 +161,6 @@ export default function Home() {
                     value={searchQuery}
                     onChangeText={handleSearch}
                 />
-                <TouchableOpacity style={styles.favoritesButton} onPress={btnfavoritos}>
-                    <AntDesign name="hearto" size={30} color="#fff" />
-                </TouchableOpacity>
             </View>
             
             {/* Swiper */}
@@ -201,21 +208,48 @@ export default function Home() {
             </TouchableOpacity>
 
             <FlatList
-                horizontal
-                data={pets}
-                renderItem={({ item }) => (
-                    <TouchableOpacity 
-                        onLongPress={() => handleLongPress(item.id)}
-                        style={styles.petItem}
+    horizontal
+    data={pets}
+    renderItem={({ item }) => (
+        <TouchableOpacity 
+            onLongPress={() => handleLongPress(item.id)}
+            onPress={() => showPetDetails(item)} // Exibe o modal com detalhes do pet
+            style={styles.petItem}
+        >
+            <Image source={getPetImage(item.species, item.gender)} style={styles.petPhoto} />
+            <Text style={styles.petName}>{item.name}</Text>
+        </TouchableOpacity>
+    )}
+    keyExtractor={(item) => item.id}
+    style={styles.petList}
+    showsHorizontalScrollIndicator={false}
+/>
+
+<Modal
+    visible={modalVisible}
+    transparent={true}
+    animationType="slide"
+    onRequestClose={() => setModalVisible(false)}
+>
+    <View style={styles.modalBackground}>
+        <View style={styles.modalContent}>
+            {selectedPet && (
+                <>
+                    <Text style={styles.modalTitle}>{selectedPet.name}</Text>
+                    <Text style={styles.modalText}>Gênero: {selectedPet.gender}</Text>
+                    <Text style={styles.modalText}>Idade: {selectedPet.age}</Text>
+                    <Text style={styles.modalText}>Raça: {selectedPet.breed}</Text>
+                    <TouchableOpacity
+                        style={styles.modalButton}
+                        onPress={() => setModalVisible(false)}
                     >
-                        <Image source={getPetImage(item.species, item.gender)} style={styles.petPhoto} />
-                        <Text style={styles.petName}>{item.name}</Text>
+                        <Text style={styles.modalButtonText}>Fechar</Text>
                     </TouchableOpacity>
-                )}
-                keyExtractor={(item) => item.id}
-                style={styles.petList}
-                showsHorizontalScrollIndicator={false}
-            />
+                </>
+            )}
+        </View>
+    </View>
+</Modal>
 
             <View style={styles.breedSection}>
                 <Text style={styles.breedTitle}>Raças de Cães</Text>
@@ -270,18 +304,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
-        paddingHorizontal: 20,
-    },
-    searchBar: {
-        flex: 1,
-        height: 40,
-        backgroundColor: '#fff',
-        borderRadius: 20,
         paddingHorizontal: 15,
-        marginRight: 15,
-        marginTop: 25,
-        fontFamily: Fonts["poppins-regular"],
-    },
+      },
+      searchBar: {
+        flex: 1,
+            height: 40,
+            backgroundColor: '#fff',
+            borderRadius: 20,
+            paddingHorizontal: 15,
+            marginLeft: 5,
+            marginTop: 25,
+            fontFamily: Fonts["poppins-regular"],
+      },
     favoritesButton: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -392,5 +426,44 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#fff',
         fontFamily: Fonts["poppins-regular"],
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: '90%',
+        maxWidth: 400,
+        padding: 20,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 15,
+        elevation: 5, // Adiciona uma sombra para profundidade
+    },
+    modalTitle: {
+        fontSize: 24,
+        fontFamily: Fonts["poppins-bold"],
+        color: '#593C9D',
+        marginBottom: 10,
+    },
+    modalText: {
+        fontSize: 16,
+        color: '#333', // Cor de texto mais escura para melhor leitura
+        marginBottom: 8,
+        fontFamily: Fonts["poppins-regular"],
+    },
+    modalButton: {
+        marginTop: 20,
+        paddingVertical: 12,
+        backgroundColor: '#593C9D',
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });

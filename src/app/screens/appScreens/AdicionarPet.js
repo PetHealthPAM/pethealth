@@ -17,6 +17,7 @@ const AdicionarPet = ({ navigation }) => {
     const [catBreeds, setCatBreeds] = useState([]);
     const [selectedBreed, setSelectedBreed] = useState('');
     const [gender, setGender] = useState('');
+    const [age, setAge] = useState('');
     const [loading, setLoading] = useState(true);
     const progress = useRef(new Animated.Value(0)).current;
 
@@ -55,11 +56,11 @@ const AdicionarPet = ({ navigation }) => {
     }, [name, species, selectedBreed, gender]);
 
     const handleSavePet = async () => {
-        if (!name || !species || !selectedBreed || !gender) {
+        if (!name || !species || !selectedBreed || !gender || !age) {
             Alert.alert('Erro', 'Todos os campos devem ser preenchidos!');
             return;
         }
-
+    
         let imageURL = '';
         if (species === 'dog') {
             imageURL = gender === 'male'
@@ -70,19 +71,20 @@ const AdicionarPet = ({ navigation }) => {
                 ? require('../../../../assets/img/gatow.png')
                 : require('../../../../assets/img/gatofemale.png');
         }
-
+    
         try {
             const user = auth.currentUser;
             if (!user) {
                 Alert.alert('Erro', 'Usuário não autenticado.');
                 return;
             }
-
+    
             await addDoc(collection(db, "pets"), {
                 name,
                 species,
                 breed: selectedBreed,
                 gender,
+                age,  // Adiciona a idade ao banco de dados
                 imageURL,
                 ownerId: user.uid,
             });
@@ -116,6 +118,17 @@ const AdicionarPet = ({ navigation }) => {
                 placeholder="Digite o nome do pet"
                 placeholderTextColor="#888"
             />
+
+<Text style={styles.label}>Idade do Pet:</Text>
+<TextInput
+    style={styles.input}
+    value={age}
+    onChangeText={setAge}
+    placeholder="Digite a idade do pet"
+    placeholderTextColor="#888"
+    keyboardType="text"
+/>
+
 
             <Text style={styles.label}>Espécie:</Text>
             <Picker

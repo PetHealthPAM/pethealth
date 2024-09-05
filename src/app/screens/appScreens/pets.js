@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, Alert, ActivityIndicator, Modal } from 'react-native';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db, auth } from "../../config/firebaseConfig";
 import Fonts from "../../utils/Fonts";
@@ -7,6 +7,8 @@ import Fonts from "../../utils/Fonts";
 const Pets = ({ navigation }) => {
     const [pets, setPets] = useState([]);
     const [loading, setLoading] = useState(true); 
+    const [selectedPet, setSelectedPet] = useState(null); // Estado para o pet selecionado
+    const [modalVisible, setModalVisible] = useState(false); // Estado para controle do modal
 
     useEffect(() => {
         const fetchPets = async () => {
@@ -75,6 +77,16 @@ const Pets = ({ navigation }) => {
         }
     };
 
+    const handlePetPress = (pet) => {
+        setSelectedPet(pet); // Define o pet selecionado
+        setModalVisible(true); // Abre o modal
+    };
+
+    const closeModal = () => {
+        setModalVisible(false); // Fecha o modal
+        setSelectedPet(null); // Limpa o pet selecionado
+    };
+
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -89,7 +101,6 @@ const Pets = ({ navigation }) => {
             {loading ? (
                 <View style={styles.overlay}>
                     <ActivityIndicator size="large" color="#7E57C2" />
-                    
                 </View>
             ) : (
                 pets.length === 0 ? (
@@ -100,7 +111,8 @@ const Pets = ({ navigation }) => {
                         keyExtractor={(item) => item.id}
                         renderItem={({ item }) => (
                             <TouchableOpacity 
-                                onLongPress={() => handleLongPress(item.id)}
+                                onPress={() => handlePetPress(item)} // Clicando para abrir o modal
+                                onLongPress={() => handleLongPress(item.id)} // Segurando para excluir
                                 style={styles.petContainer}
                             >
                                 <Image source={getPetImage(item.species, item.gender)} style={styles.petImage} />
@@ -110,6 +122,32 @@ const Pets = ({ navigation }) => {
                     />
                 )
             )}
+
+            <Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalBackground}>
+                    <View style={styles.modalContent}>
+                        {selectedPet && (
+                            <>
+                                <Text style={styles.modalTitle}>{selectedPet.name}</Text>
+                                <Text style={styles.modalText}>Gênero: {selectedPet.gender === 'male' ? 'Macho' : 'Fêmea'}</Text>
+                                <Text style={styles.modalText}>Idade: {selectedPet.age}</Text>
+                                <Text style={styles.modalText}>Raça: {selectedPet.breed}</Text>
+                                <TouchableOpacity
+                                    style={styles.modalButton}
+                                    onPress={closeModal}
+                                >
+                                    <Text style={styles.modalButtonText}>Fechar</Text>
+                                </TouchableOpacity>
+                            </>
+                        )}
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -121,24 +159,24 @@ const styles = StyleSheet.create({
         backgroundColor: '#f4f4f8',
     },
     containervoltar: {
-      justifyContent: 'center',
-      alignItems: 'flex-start',
-      marginBottom: 10,
-      marginTop: 5,
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        marginBottom: 10,
+        marginTop: 5,
     },
     BNTvoltar: {
-      width: 30,
-      height: 30,
-      resizeMode: 'contain',
-      marginTop: 10,
-      marginLeft: 10,
+        width: 30,
+        height: 30,
+        resizeMode: 'contain',
+        marginTop: 10,
+        marginLeft: 10,
     },
     txtvoltar: {
-      fontFamily: Fonts['poppins-black'],
-      fontSize: 16,
-      color: '#7E57C2',
-      marginTop: 5,
-      textAlign: 'left',
+        fontFamily: Fonts['poppins-black'],
+        fontSize: 16,
+        color: '#7E57C2',
+        marginTop: 5,
+        textAlign: 'left',
     },
     title: {
         fontSize: 24,
@@ -186,6 +224,45 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: '90%',
+        maxWidth: 400,
+        padding: 20,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 15,
+        elevation: 5, // Adiciona uma sombra para profundidade
+    },
+    modalTitle: {
+        fontSize: 24,
+        fontFamily: Fonts["poppins-bold"],
+        color: '#593C9D',
+        marginBottom: 10,
+    },
+    modalText: {
+        fontSize: 16,
+        color: '#333', // Cor de texto mais escura para melhor leitura
+        marginBottom: 8,
+        fontFamily: Fonts["poppins-regular"],
+    },
+    modalButton: {
+        marginTop: 20,
+        paddingVertical: 12,
+        backgroundColor: '#593C9D',
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 

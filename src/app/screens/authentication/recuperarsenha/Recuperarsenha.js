@@ -36,6 +36,14 @@ export default function ReplacePass({ navigation }) {
                 </View>
             ) : (
                 <>
+
+<TouchableOpacity onPress={() => navigation.goBack()}>
+                <View style={styles.containervoltar}>
+                    <Image source={require('../../../../../assets/img/voltar.png')} style={styles.BNTvoltar} />
+                    <Text style={styles.txtvoltar}>Voltar</Text>
+                </View>
+            </TouchableOpacity>
+
                     <View style={styles.containlogo}>
                         <Image source={require('../../../../../assets/img/logoroxa.png')} style={styles.logo} />
                     </View>
@@ -59,12 +67,6 @@ export default function ReplacePass({ navigation }) {
                     >
                         <Text style={styles.textButton}>Enviar</Text>
                     </Pressable>
-                    <View style={styles.subContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("Login")} style={styles.displayrow}>
-                            <Image source={require('../../../../../assets/img/arrow.png')} style={styles.arrow} />
-                            <Text style={styles.txtvoltar}>Voltar</Text>
-                        </TouchableOpacity>
-                    </View>
                 </>
             )}
         </View>
@@ -75,8 +77,21 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFF7ED',
-        paddingVertical: '35%',
+        paddingVertical: '10%',
         paddingHorizontal: 20,
+    },
+    BNTvoltar: {
+        width: 30,
+        height: 30,
+        resizeMode: 'contain',
+        marginLeft: 10,
+    },
+    txtvoltar: {
+        fontFamily: Fonts['poppins-black'],
+        fontSize: 16,
+        color: '#7E57C2',
+        marginTop: 5,
+        textAlign: 'left',
     },
     containlogo: {
         alignItems: 'center',

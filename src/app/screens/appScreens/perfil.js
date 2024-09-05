@@ -94,25 +94,7 @@ export default function Perfil({ navigation }) {
     }
   };
 
-  const saveImageURLToFirestore = async (userId, imageURL) => {
-    try {
-      const userRef = doc(db, "Users", userId);
-      const docSnap = await getDoc(userRef);
-      if (docSnap.exists()) {
-        await updateDoc(userRef, {
-          imageURL: imageURL,
-        });
-      } else {
-        await setDoc(userRef, {
-          imageURL: imageURL,
-        });
-      }
-      console.log("URL da imagem salva com sucesso no Firestore.");
-    } catch (error) {
-      console.error("Erro ao salvar a URL da imagem no Firestore:", error);
-    }
-  };
-
+  
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
@@ -129,6 +111,19 @@ export default function Perfil({ navigation }) {
       });
   };
 
+  const saveImageURLToFirestore = async (userId, imageURL) => {
+    try {
+      const userRef = doc(db, "Users", userId);
+      await updateDoc(userRef, {
+        imageURL: imageURL,  // Aqui pode ser uma URL ou null
+      });
+      console.log("URL da imagem salva ou removida com sucesso no Firestore.");
+    } catch (error) {
+      console.error("Erro ao salvar ou remover a URL da imagem no Firestore:", error);
+    }
+  };
+  
+
   const btnfavoritos = () => {
     navigation.navigate('Favoritos'); // O nome deve corresponder exatamente ao nome da tela no navegador
   };
@@ -140,9 +135,6 @@ export default function Perfil({ navigation }) {
           style={styles.searchBar}
           placeholder="Pesquisar..."
         />
-       <TouchableOpacity style={styles.favoritesButton} onPress={btnfavoritos}>
-                    <AntDesign name="hearto" size={30} color="#fff" />
-                </TouchableOpacity>
       </View>
 
       <Text style={styles.title}>Perfil</Text>
@@ -298,30 +290,49 @@ export default function Perfil({ navigation }) {
 
       {/* Modal para ver a imagem ampliada */}
       <Modal
-        transparent={true}
-        visible={imageModalVisible}
-        onRequestClose={() => setImageModalVisible(false)}
+  transparent={true}
+  visible={imageModalVisible}
+  onRequestClose={() => setImageModalVisible(false)}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.imageModalContent}>
+      <Image
+        source={image ? { uri: image } : require("../../../../assets/img/default-profile.jpg")}
+        style={styles.enlargedImage}
+      />
+      
+      {/* Botão para editar a imagem */}
+      <TouchableOpacity
+        style={styles.pencilButton}
+        onPress={() => {
+          setImageModalVisible(false);
+          pickImage();
+        }}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.imageModalContent}>
-            <Image source={{ uri: image }} style={styles.enlargedImage} />
-            <TouchableOpacity
-              style={styles.pencilButton}
-              onPress={() => {
-                setImageModalVisible(false);
-                pickImage();
-              }}
-            >
-              <Feather name="edit-2" size={24} color="#fff" />
-            </TouchableOpacity>
-            <Button
-              title="Fechar"
-              onPress={() => setImageModalVisible(false)}
-              color="gray" // Aqui você define a cor desejada
-            />
-          </View>
-        </View>
-      </Modal>
+        <Feather name="edit-2" size={24} color="#fff" />
+      </TouchableOpacity>
+
+      {/* Botão "X" para remover a imagem */}
+      <TouchableOpacity
+        style={styles.removeButton}
+        onPress={async () => {
+          setImage(null);
+          setImageModalVisible(false);
+          await saveImageURLToFirestore(auth.currentUser.uid, null); // Remover a imagem no Firestore
+        }}
+      >
+        <Feather name="x" size={24} color={'white'}/>
+      </TouchableOpacity>
+
+      {/* Botão para fechar o modal */}
+      <Button
+        title="Fechar"
+        onPress={() => setImageModalVisible(false)}
+        color="gray"
+      />
+    </View>
+  </View>
+</Modal>
     </View>
   );
 }
@@ -332,24 +343,23 @@ const styles = StyleSheet.create({
             backgroundColor: '#fff', 
         },
         topContainer: {
-            width: '100%',
-            height: 100, 
-            backgroundColor: '#593C9D',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'row',
-            paddingHorizontal: 20,
-            paddingTop: 20, 
+          width: '100%',
+          height: 100,
+          backgroundColor: '#593C9D',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'row',
+          paddingHorizontal: 15,
         },
         searchBar: {
-            flex: 1,
-            height: 40,
-            backgroundColor: '#fff',
-            borderRadius: 20,
-            paddingHorizontal: 15,
-            marginRight: 15,
-            marginTop: 5,
-            fontFamily: Fonts["poppins-regular"],
+          flex: 1,
+              height: 40,
+              backgroundColor: '#fff',
+              borderRadius: 20,
+              paddingHorizontal: 15,
+              marginLeft: 5,
+              marginTop: 25,
+              fontFamily: Fonts["poppins-regular"],
         },
         favoritesButton: {
             justifyContent: 'center',
@@ -463,4 +473,26 @@ modalButtons: {
     borderRadius: 20,
     padding: 10,
   },
+  removeButton: {
+    position: 'absolute',
+    top: 20, // Ajuste conforme a necessidade
+    right: 20, // Mantém o botão no canto superior direito
+    backgroundColor: '#FF6347', // Cor de fundo vermelha (ou qualquer cor que combine com seu design)
+    borderRadius: 50, // Torna o botão circular
+    padding: 10, // Adiciona preenchimento para aumentar a área clicável
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5, // Sombras no Android
+    shadowColor: '#000', // Cor da sombra no iOS
+    shadowOffset: { width: 0, height: 2 }, // Posição da sombra no iOS
+    shadowOpacity: 0.25, // Opacidade da sombra no iOS
+    shadowRadius: 3.84, // Raio da sombra no iOS
+    zIndex: 10, // Garante que o botão fique acima de outros elementos
+  },
+  removeIcon: {
+    fontSize: 18, // Tamanho do ícone "X"
+    color: '#FFF', // Cor do "X"
+    fontWeight: 'bold', // Destaca o "X"
+  },
+  
 });

@@ -206,12 +206,6 @@ export default function Calendario() {
           value={searchQuery}
           onChangeText={handleSearch}
         />
-        <TouchableOpacity
-          style={styles.favoritesButton}
-          onPress={() => navigation.navigate("Favoritos")}
-        >
-          <AntDesign name="hearto" size={30} color="#FFFFFF" />
-        </TouchableOpacity>
       </View>
       <Calendar
         onDayPress={handleDayPress}
@@ -348,7 +342,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
   },
   searchBar: {
     flex: 1,
@@ -356,7 +350,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 20,
         paddingHorizontal: 15,
-        marginRight: 15,
+        marginLeft: 5,
         marginTop: 25,
         fontFamily: Fonts["poppins-regular"],
   },
