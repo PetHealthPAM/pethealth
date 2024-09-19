@@ -228,12 +228,13 @@ export default function Calendario() {
         )}
         keyExtractor={(item) => item.id}
         renderItem={renderEvent}
-        contentContainerStyle={styles.eventList}
+        contentContainerStyle={[styles.eventList, { paddingBottom: 90 }]}
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             <Text style={styles.listHeader}>Seus Eventos</Text>
           </View>
         }
+        contentInset={{ bottom: 90 }}
       />
       <Modal
         animationType="slide"
@@ -252,6 +253,7 @@ export default function Calendario() {
               <Picker.Item label="Selecione um evento" value="" />
               <Picker.Item label="Banho" value="banho" />
               <Picker.Item label="Tosa" value="tosa" />
+              <Picker.Item label="Veterinário" value="veterinário" />
               <Picker.Item label="Comprar Ração" value="ração" />
             </Picker>
             <ScrollView style={styles.petScrollView}>

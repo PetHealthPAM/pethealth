@@ -17,6 +17,9 @@ import Recuperarsenha from '../screens/authentication/recuperarsenha/Recuperarse
 import AdicionarPet from '../screens/appScreens/AdicionarPet';
 import Pets from '../screens/appScreens/pets';
 import Favoritos from '../screens/appScreens/favoritos';
+import Chat from '../screens/appScreens/Chat';
+import ChatList from '../screens/appScreens/ChatList';
+import ChatPessoal from '../screens/appScreens/ChatPessoal';
 
 
 
@@ -37,7 +40,9 @@ export default function Routes() {
             <Stack.Screen name="AdicionarPet" component={AdicionarPet} />
             <Stack.Screen name="Favoritos" component={Favoritos} />
             <Stack.Screen name="TabBar" component={TabBar} />
-
+            <Stack.Screen name="Chat" component={Chat} />
+            <Stack.Screen name="ChatList" component={ChatList} />
+            <Stack.Screen name="ChatPessoal" component={ChatPessoal} />
         </Stack.Navigator>
   )
 }

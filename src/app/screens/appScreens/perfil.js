@@ -179,6 +179,13 @@ export default function Perfil({ navigation }) {
   <Ionicons name="paw-outline" size={24} color="#000" />
   <Text style={styles.settingText}>Meus Pets</Text>
 </TouchableOpacity>
+<TouchableOpacity
+  style={styles.settingItem}
+  onPress={() => navigation.navigate('ChatList')}
+>
+  <Ionicons name="chatbox-ellipses-outline" size={24} color="#000" />
+  <Text style={styles.settingText}>Chats</Text>
+</TouchableOpacity>
         <TouchableOpacity style={styles.settingItem} onPress={handleLogout}>
           <Ionicons name="exit-outline" size={24} color="#000" />
           <Text style={styles.settingText}>Sair</Text>

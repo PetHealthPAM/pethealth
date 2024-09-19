@@ -73,6 +73,7 @@ export default function Adote({ navigation }) {
                     vaccinated: true,
                     dewormed: true,
                     image: dogImages[index % dogImages.length] || 'https://via.placeholder.com/300',
+                    ownerId: 'owner-dog-' + index, // Adiciona um ID fictício do dono
                 })),
                 ...catBreeds.map((breed, index) => ({
                     id: `cat-${index}`,
@@ -84,8 +85,10 @@ export default function Adote({ navigation }) {
                     vaccinated: true,
                     dewormed: true,
                     image: catImages[index % catImages.length] || 'https://via.placeholder.com/300',
+                    ownerId: 'owner-cat-' + index, // Adiciona um ID fictício do dono
                 })),
             ];
+            
 
             setPets(combinedPets.sort(() => Math.random() - 0.5));
             setLoading(false);
@@ -94,10 +97,22 @@ export default function Adote({ navigation }) {
         loadPets();
     }, []);
 
-    const handleSwipe = (cardIndex) => {
+    const handleSwipeRight = (pet) => {
+        navigation.navigate('Chat', { petId: pet.id, petName: pet.name, ownerId: pet.ownerId });
+    };
+    
+    const handleSwipe = (cardIndex, direction) => {
         if (cardIndex >= pets.length) return;
         const pet = pets[cardIndex];
+    
+        if (direction === 'right') {
+            navigation.navigate('Chat', { pet });
+        }
     };
+    
+    
+
+    
 
     return (
         <View style={styles.container}>

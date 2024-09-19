@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
         color: '#7E57C2',
         textAlign: 'center',
         paddingTop: '70%',
-        fontFamily: Fonts["poppins-regular"],
+        fontFamily: Fonts['poppins-black'],
     },
     petContainer: {
         flexDirection: 'row',
