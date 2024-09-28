@@ -10,6 +10,8 @@ import {
   Modal,
   Button,
   ScrollView,
+  FlatList,
+  Animated,
 } from "react-native";
 import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -31,6 +33,28 @@ export default function Perfil({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [imageModalVisible, setImageModalVisible] = useState(false); // Modal para ver imagem ampliada
   const [editNameMode, setEditNameMode] = useState(false);
+  const [eventType, setEventType] = useState("");
+const [searchTerm, setSearchTerm] = useState('');
+
+const data = [
+  { id: '1', name: 'Calendário', route: 'calendario' },
+  { id: '2', name: 'Perfil', route: 'perfil' },
+  { id: '3', name: 'Home', route: 'home' },
+  { id: '4', name: 'Adote', route: 'adote' },
+  { id: '5', name: 'Adicionar Pet', route: 'AdicionarPet' },
+  { id: '6', name: 'Meus Pets', route: 'Pets' },
+  { id: '7', name: 'Chats', route: 'ChatList' },
+
+ 
+];
+
+const filteredData = data.filter(item =>
+  item.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+const handleNavigation = (route) => {
+  navigation.navigate(route);
+};
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -128,14 +152,49 @@ export default function Perfil({ navigation }) {
     navigation.navigate('Favoritos'); // O nome deve corresponder exatamente ao nome da tela no navegador
   };
 
+  const showModal = () => {
+  setModalVisible(true);
+  Animated.spring(translateY, {
+    toValue: 0,
+    useNativeDriver: true,
+  }).start();
+};
+
+const hideModal = () => {
+  Animated.spring(translateY, {
+    toValue: 100, // Mover para baixo
+    useNativeDriver: true,
+  }).start(() => {
+    setModalVisible(false); // Fecha o modal após a animação
+    setEditNameMode(false);
+  });
+};
+
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
         <TextInput
-          style={styles.searchBar}
-          placeholder="Pesquisar..."
+          placeholder="Buscar..."
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          style={styles.searchInput}
         />
       </View>
+      {/* Lista de resultados filtrados - Apenas aparece se houver algo digitado */}
+      {searchTerm.length > 0 && (
+        <FlatList
+          data={filteredData}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity 
+              style={styles.suggestionItem} 
+              onPress={() => handleNavigation(item.route)}
+            >
+              <Text style={styles.suggestionText}>{item.name}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
 
       <Text style={styles.title}>Perfil</Text>
       <View style={styles.profileContainer}>
@@ -194,106 +253,110 @@ export default function Perfil({ navigation }) {
 
       {/* Modal para edição do nome ou informações pessoais */}
       <Modal
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-          setEditNameMode(false);
-        }}
-      >
-        <View style={styles.modalContainer}>
-  <View style={styles.modalContent}>
-    <Text style={styles.modalTitle}>
-      {editNameMode ? "Editar Nome" : "Editar Informações Pessoais"}
-    </Text>
-    <ScrollView contentContainerStyle={styles.scrollViewContent}>
-      <View style={styles.formGroup}>
-        <Text style={styles.formLabel}>Nome</Text>
-        <TextInput
-          style={styles.formInput}
-          placeholder="Nome"
-          value={nomeUser}
-          onChangeText={setNomeUser}
-        />
-      </View>
-      {!editNameMode && (
-        <>
-          <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>E-mail</Text>
-            <TextInput
-              style={styles.formInput}
-              placeholder="E-mail"
-              value={emailUser}
-              onChangeText={setEmailUser}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>Telefone</Text>
-            <TextInput
-              style={styles.formInput}
-              placeholder="Telefone"
-              value={phone}
-              onChangeText={setPhone}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>Endereço</Text>
-            <TextInput
-              style={styles.formInput}
-              placeholder="Endereço"
-              value={address}
-              onChangeText={setAddress}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>Cidade</Text>
-            <TextInput
-              style={styles.formInput}
-              placeholder="Cidade"
-              value={city}
-              onChangeText={setCity}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>Estado</Text>
-            <TextInput
-              style={styles.formInput}
-              placeholder="Estado"
-              value={state}
-              onChangeText={setState}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>Sexo</Text>
-            <TextInput
-              style={styles.formInput}
-              placeholder="Sexo"
-              value={gender}
-              onChangeText={setGender}
-            />
-          </View>
-        </>
-      )}
-      <View style={styles.modalButtons}>
-        <Button
-          title="Cancelar"
-          onPress={() => {
-            setModalVisible(false);
-            setEditNameMode(false);
-          }}
-          color="gray" // Cor do botão "Cancelar"
-        />
-        <Button
-          title="Salvar"
-          onPress={saveUserInfo}
-          color="#593C9D" // Cor do botão "Salvar"
-        />
-      </View>
-    </ScrollView>
-  </View>
-</View>
+  transparent={true}
+  visible={modalVisible}
+  animationType="slide" // Defina o tipo de animação aqui
+  onRequestClose={() => {
+    setModalVisible(false);
+    setEditNameMode(false);
+  }}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>
+        {editNameMode ? "Editar Nome" : "Editar Informações Pessoais"}
+      </Text>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.formGroup}>
+          <Text style={styles.formLabel}>Nome</Text>
+          <TextInput
+            style={styles.formInput}
+            placeholder="Nome"
+            value={nomeUser}
+            onChangeText={setNomeUser}
+          />
+        </View>
+        {!editNameMode && (
+          <>
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>E-mail</Text>
+              <TextInput
+                style={styles.formInput}
+                placeholder="E-mail"
+                value={emailUser}
+                onChangeText={setEmailUser}
+              />
+            </View>
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Telefone</Text>
+              <TextInput
+                style={styles.formInput}
+                placeholder="Telefone"
+                value={phone}
+                onChangeText={setPhone}
+              />
+            </View>
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Endereço</Text>
+              <TextInput
+                style={styles.formInput}
+                placeholder="Endereço"
+                value={address}
+                onChangeText={setAddress}
+              />
+            </View>
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Cidade</Text>
+              <TextInput
+                style={styles.formInput}
+                placeholder="Cidade"
+                value={city}
+                onChangeText={setCity}
+              />
+            </View>
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Estado</Text>
+              <TextInput
+                style={styles.formInput}
+                placeholder="Estado"
+                value={state}
+                onChangeText={setState}
+              />
+            </View>
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Sexo</Text>
+              <TextInput
+                style={styles.formInput}
+                placeholder="Sexo"
+                value={gender}
+                onChangeText={setGender}
+              />
+            </View>
+          </>
+        )}
+        <View style={styles.modalButtons}>
+  <TouchableOpacity
+    style={[styles.button, styles.cancelButton]} // Estilo para o botão "Cancelar"
+    onPress={() => {
+      setModalVisible(false);
+      setEditNameMode(false);
+    }}
+  >
+    <Text style={styles.buttonText}>Cancelar</Text>
+  </TouchableOpacity>
 
-      </Modal>
+  <TouchableOpacity
+    style={[styles.button, styles.saveButton]} // Estilo para o botão "Salvar"
+    onPress={saveUserInfo}
+  >
+    <Text style={styles.buttonText}>Salvar</Text>
+  </TouchableOpacity>
+</View>
+      </ScrollView>
+    </View>
+  </View>
+</Modal>
+
 
       {/* Modal para ver a imagem ampliada */}
       <Modal
@@ -328,7 +391,7 @@ export default function Perfil({ navigation }) {
           await saveImageURLToFirestore(auth.currentUser.uid, null); // Remover a imagem no Firestore
         }}
       >
-        <Feather name="x" size={24} color={'white'}/>
+        <Feather name="x" size={26} color={'white'}/>
       </TouchableOpacity>
 
       {/* Botão para fechar o modal */}
@@ -459,9 +522,28 @@ formInput: {
   paddingHorizontal: 10,
 },
 modalButtons: {
-  marginTop: 20,
   flexDirection: 'row',
   justifyContent: 'space-between',
+  paddingHorizontal: 10,
+  marginTop: 20,
+},
+button: {
+  paddingVertical: 10, // Aumenta a altura do botão
+  paddingHorizontal: 20, // Aumenta a largura do botão
+  borderRadius: 10,
+},
+cancelButton: {
+  backgroundColor: 'gray',
+},
+saveButton: {
+  backgroundColor: '#593C9D',
+  marginLeft: 15, // Cor para o botão "Salvar"
+},
+buttonText: {
+  color: '#fff', // Cor do texto
+  fontSize: 18, // Tamanho da fonte
+  fontFamily: Fonts["poppins-bold"], // Substitua pelo nome da sua fonte
+  textAlign: 'center',
 },
   imageModalContent: {
     alignItems: "center",
@@ -501,5 +583,26 @@ modalButtons: {
     color: '#FFF', // Cor do "X"
     fontWeight: 'bold', // Destaca o "X"
   },
+  searchInput: {
+    flex: 1,
+           height: 40,
+           backgroundColor: '#fff',
+           borderRadius: 20,
+           paddingHorizontal: 15,
+           marginLeft: 5,
+           marginTop: 25,
+           fontFamily: Fonts["poppins-regular"],
+ },
+ suggestionItem: {
+   backgroundColor: "#EEE",
+   padding: 10,
+   borderRadius: 8,
+   marginVertical: 10,
+   marginHorizontal: 10,
+ },
+ suggestionText: {
+   fontSize: 16,
+   fontFamily: Fonts["poppins-regular"],
+ },
   
 });

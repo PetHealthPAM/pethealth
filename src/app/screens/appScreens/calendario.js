@@ -29,18 +29,41 @@ import Fonts from "../../utils/Fonts";
 
 export default function Calendario() {
   const [selectedDate, setSelectedDate] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [events, setEvents] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [eventType, setEventType] = useState("banho");
+  const [eventType, setEventType] = useState("");
   const [pets, setPets] = useState([]);
   const [selectedPet, setSelectedPet] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [eventDetailsVisible, setEventDetailsVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const today = new Date().toISOString().split("T")[0];
 
   const navigation = useNavigation();
   const userId = auth.currentUser.uid;
+
+  const data = [
+    { id: '1', name: 'Calendário', route: 'calendario' },
+    { id: '2', name: 'Perfil', route: 'perfil' },
+    { id: '3', name: 'Home', route: 'home' },
+    { id: '4', name: 'Adote', route: 'adote' },
+    { id: '5', name: 'Adicionar Pet', route: 'AdicionarPet' },
+    { id: '6', name: 'Meus Pets', route: 'Pets' },
+    { id: '7', name: 'Chats', route: 'ChatList' },
+
+    // Adicione mais itens conforme necessário
+  ];
+
+  // Função para filtrar os dados com base no termo de pesquisa
+  const filteredData = data.filter(item =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Função para navegar para a tela correta
+  const handleNavigation = (route) => {
+    navigation.navigate(route);
+  };
 
   useEffect(() => {
     const fetchPets = async () => {
@@ -75,10 +98,6 @@ export default function Calendario() {
     fetchEvents();
   }, [userId, modalVisible]);
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-  };
-
   const addEvent = async () => {
     if (selectedPet) {
       try {
@@ -105,7 +124,7 @@ export default function Calendario() {
   };
 
   const resetModal = () => {
-    setEventType("banho");
+    setEventType("");
     setSelectedPet("");
     setModalVisible(false);
   };
@@ -201,12 +220,27 @@ export default function Calendario() {
     <View style={styles.container}>
       <View style={styles.topContainer}>
         <TextInput
-          style={styles.searchBar}
-          placeholder="Pesquisar..."
-          value={searchQuery}
-          onChangeText={handleSearch}
+          placeholder="Buscar..."
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          style={styles.searchInput}
         />
       </View>
+      {/* Lista de resultados filtrados - Apenas aparece se houver algo digitado */}
+      {searchTerm.length > 0 && (
+        <FlatList
+          data={filteredData}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity 
+              style={styles.suggestionItem} 
+              onPress={() => handleNavigation(item.route)}
+            >
+              <Text style={styles.suggestionText}>{item.name}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
       <Calendar
         onDayPress={handleDayPress}
         markedDates={customMarkedDates}
@@ -250,7 +284,7 @@ export default function Calendario() {
               style={styles.picker}
               onValueChange={(itemValue) => setEventType(itemValue)}
             >
-              <Picker.Item label="Selecione um evento" value="" />
+              <Picker.Item label="Selecione uma opção" value="" />
               <Picker.Item label="Banho" value="banho" />
               <Picker.Item label="Tosa" value="tosa" />
               <Picker.Item label="Veterinário" value="veterinário" />
@@ -296,38 +330,39 @@ export default function Calendario() {
         </View>
       </Modal>
       {selectedEvent && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={eventDetailsVisible}
-          onRequestClose={() => setEventDetailsVisible(false)}
+  <Modal
+    animationType="slide"
+    transparent={true}
+    visible={eventDetailsVisible}
+    onRequestClose={() => setEventDetailsVisible(false)}
+  >
+    <View style={styles.modalBackground}>
+      <View style={styles.modalView}>
+        <Text style={styles.modalTitle}>Detalhes do Evento</Text>
+        {selectedEvent && (
+          <>
+            <Text style={styles.eventDetailText}>
+              Tipo: {selectedEvent.type}
+            </Text>
+            <Text style={styles.eventDetailText}>
+              Data: {selectedEvent.date}
+            </Text>
+            <Text style={styles.eventDetailText}>
+              Pet: {getPetDetails(selectedEvent.petId)?.name || "Desconhecido"}
+            </Text>
+          </>
+        )}
+        <TouchableOpacity
+          style={[styles.modalButton2, { backgroundColor: "gray" }]}
+          onPress={() => setEventDetailsVisible(false)}
         >
-          <View style={styles.modalBackground}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalTitle}>Detalhes do Evento</Text>
-              {selectedEvent && (
-                <>
-                  <Text style={styles.eventDetailText}>
-                    Tipo: {selectedEvent.type}
-                  </Text>
-                  <Text style={styles.eventDetailText}>
-                    Data: {selectedEvent.date}
-                  </Text>
-                  <Text style={styles.eventDetailText}>
-                    Pet: {getPetDetails(selectedEvent.petId)?.name || "Desconhecido"}
-                  </Text>
-                </>
-              )}
-              <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: "gray" }]}
-                onPress={() => setEventDetailsVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Fechar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      )}
+          <Text style={[styles.modalButtonText2, { color: "white" }]}>Fechar</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </Modal>
+)}
+
     </View>
   );
 }
@@ -345,16 +380,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 15,
-  },
-  searchBar: {
-    flex: 1,
-        height: 40,
-        backgroundColor: '#fff',
-        borderRadius: 20,
-        paddingHorizontal: 15,
-        marginLeft: 5,
-        marginTop: 25,
-        fontFamily: Fonts["poppins-regular"],
   },
   favoritesButton: {
     justifyContent: 'center',
@@ -394,10 +419,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  eventText: {
+  shadowOffset: { width: 0, height: 2 },
+
+eventText: {
     fontSize: 16,
-    color: "#333",
     fontFamily: Fonts["poppins-regular"],
+    color: "#333",
   },
   petPhoto: {
     width: 40,
@@ -409,59 +436,64 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalView: {
-    width: "85%",
-    backgroundColor: "#FFFFFF",
+    width: "90%",
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 20,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
     elevation: 5,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: Fonts["poppins-bold"],
     color: "#593C9D",
-    marginBottom: 15,
+    marginBottom: 20,
   },
   picker: {
     width: "100%",
-    height: 50,
-    marginBottom: 20,
+    marginVertical: 10,
   },
   petScrollView: {
-    maxHeight: 150,
     width: "100%",
+    height: 100,
+    marginVertical: 10,
   },
   petContainer: {
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
+    marginVertical: 5,
+    backgroundColor: "#F9F9F9",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
   },
   selectedPetContainer: {
-    backgroundColor: "#D1C4E9",
+    backgroundColor: "#AFA1C7",
   },
   petImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
   },
   petName: {
     fontSize: 16,
-    marginLeft: 10,
     fontFamily: Fonts["poppins-regular"],
   },
   noPetsText: {
     fontSize: 16,
+    fontFamily: Fonts["poppins-regular"],
     color: "#999",
     textAlign: "center",
-    fontFamily: Fonts["poppins-regular"],
   },
   buttonContainer: {
     flexDirection: "row",
@@ -470,21 +502,60 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   modalButton: {
+    flex: 1,
     backgroundColor: "#593C9D",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
+    padding: 10,
     borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
     marginHorizontal: 5,
-    elevation: 2,
+  },
+  modalButton2: {
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modalButtonText: {
-    color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: Fonts["poppins-regular"],
+    fontFamily: Fonts["poppins-bold"],
+    color: "#FFFFFF",
+  },
+  modalButtonText2: {
+    fontSize: 16,
+    fontFamily: Fonts["poppins-bold"],
+    color: "#FFFFFF",
+  },
+  eventDetails: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
   },
   eventDetailText: {
     fontSize: 16,
-    marginBottom: 10,
+    fontFamily: Fonts["poppins-regular"],
+    marginVertical: 5,
+  },
+  searchInput: {
+     flex: 1,
+            height: 40,
+            backgroundColor: '#fff',
+            borderRadius: 20,
+            paddingHorizontal: 15,
+            marginLeft: 5,
+            marginTop: 25,
+            fontFamily: Fonts["poppins-regular"],
+  },
+  suggestionItem: {
+    backgroundColor: "#EEE",
+    padding: 10,
+    borderRadius: 8,
+    marginVertical: 5,
+    marginHorizontal: 10,
+  },
+  suggestionText: {
+    fontSize: 16,
     fontFamily: Fonts["poppins-regular"],
   },
 });
+

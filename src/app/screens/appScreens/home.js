@@ -13,12 +13,31 @@ const API_KEY_CAT = 'live_rlswPycwAxMFCNOEuB0Gp9gIik708ockKXnjesGMXgMHyTxeT0LlIb
 
 export default function Home() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredData, setFilteredData] = useState([]);
     const [pets, setPets] = useState([]);
     const [dogBreeds, setDogBreeds] = useState([]);
     const [catBreeds, setCatBreeds] = useState([]);
     const [selectedPet, setSelectedPet] = useState(null); // Estado para o pet selecionado
     const [modalVisible, setModalVisible] = useState(false); // Estado para visibilidade do modal
+    const [eventType, setEventType] = useState("");
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const data = [
+        { id: '1', name: 'Calendário', route: 'calendario' },
+        { id: '2', name: 'Perfil', route: 'perfil' },
+        { id: '3', name: 'Home', route: 'home' },
+        { id: '4', name: 'Adote', route: 'adote' },
+        { id: '5', name: 'Adicionar Pet', route: 'AdicionarPet' },
+        { id: '6', name: 'Meus Pets', route: 'Pets' },
+        { id: '7', name: 'Chats', route: 'ChatList' },
+    ];
+
+    const filteredData = data.filter(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      const handleNavigation = (route) => {
+        navigation.navigate(route);
+      };
 
 const showPetDetails = (pet) => {
     setSelectedPet(pet);
@@ -155,13 +174,28 @@ const showPetDetails = (pet) => {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.topContainer}>
-                <TextInput
-                    style={styles.searchBar}
-                    placeholder="Pesquisar..."
-                    value={searchQuery}
-                    onChangeText={handleSearch}
-                />
-            </View>
+        <TextInput
+          placeholder="Buscar..."
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          style={styles.searchInput}
+        />
+      </View>
+      {/* Lista de resultados filtrados - Apenas aparece se houver algo digitado */}
+      {searchTerm.length > 0 && (
+        <FlatList
+          data={filteredData}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity 
+              style={styles.suggestionItem} 
+              onPress={() => handleNavigation(item.route)}
+            >
+              <Text style={styles.suggestionText}>{item.name}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
             
             {/* Swiper */}
             <View style={styles.swiperContainer}>
@@ -466,4 +500,25 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    searchInput: {
+     flex: 1,
+            height: 40,
+            backgroundColor: '#fff',
+            borderRadius: 20,
+            paddingHorizontal: 15,
+            marginLeft: 5,
+            marginTop: 25,
+            fontFamily: Fonts["poppins-regular"],
+  },
+  suggestionItem: {
+    backgroundColor: "#EEE",
+    padding: 10,
+    borderRadius: 8,
+    marginVertical: 5,
+    marginHorizontal: 10,
+  },
+  suggestionText: {
+    fontSize: 16,
+    fontFamily: Fonts["poppins-regular"],
+  },
 });
