@@ -10,10 +10,8 @@ export default function InformacoesPessoais() {
     const [birthDate, setBirthDate] = useState('01/01/1990');
 
     const handleSave = () => {
-        // Lógica para salvar as informações atualizadas
         console.log('Informações salvas:', { email, phone, address, birthDate });
 
-        // Exibir uma mensagem de confirmação
         Alert.alert('Sucesso', 'Informações salvas com sucesso!', [
             { text: 'OK', onPress: () => router.push('../tabs/perfil') }
         ]);

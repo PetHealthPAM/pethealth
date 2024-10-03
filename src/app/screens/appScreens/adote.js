@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, ActivityIndicator, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Image, ActivityIndicator, Dimensions, TouchableOpacity } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
+import { Ionicons } from '@expo/vector-icons';
+import { collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { db } from '../../config/firebaseConfig';
+import Fonts from "../../utils/Fonts";
 
 const DOG_BREEDS_URL = 'https://api.thedogapi.com/v1/breeds';
 const CAT_BREEDS_URL = 'https://api.thecatapi.com/v1/breeds';
@@ -51,18 +55,36 @@ const fetchAllCatImages = async () => {
     }
 };
 
+// Função para embaralhar os pets
+const shuffleArray = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+};
+
+
 export default function Adote({ navigation }) {
     const [pets, setPets] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadPets = async () => {
+            const fetchPets = async () => {
+                try {
+                    const q = query(collection(db, 'pets'), orderBy('createdAt', 'desc'));
+                    const querySnapshot = await getDocs(q);
+                    return querySnapshot.docs.map(doc => doc.data());
+                } catch (error) {
+                    console.error('Erro ao buscar os pets:', error);
+                    return [];
+                }
+            };
+
+            const firestorePets = await fetchPets();
             const dogBreeds = await fetchDogs();
             const catBreeds = await fetchCats();
             const dogImages = await fetchAllDogImages();
             const catImages = await fetchAllCatImages();
 
-            const combinedPets = [
+            const apiPets = shuffleArray([
                 ...dogBreeds.map((breed, index) => ({
                     id: `dog-${index}`,
                     name: breed.name,
@@ -73,7 +95,7 @@ export default function Adote({ navigation }) {
                     vaccinated: true,
                     dewormed: true,
                     image: dogImages[index % dogImages.length] || 'https://via.placeholder.com/300',
-                    ownerId: 'owner-dog-' + index, // Adiciona um ID fictício do dono
+                    ownerId: 'owner-dog-' + index,
                 })),
                 ...catBreeds.map((breed, index) => ({
                     id: `cat-${index}`,
@@ -85,34 +107,104 @@ export default function Adote({ navigation }) {
                     vaccinated: true,
                     dewormed: true,
                     image: catImages[index % catImages.length] || 'https://via.placeholder.com/300',
-                    ownerId: 'owner-cat-' + index, // Adiciona um ID fictício do dono
+                    ownerId: 'owner-cat-' + index,
                 })),
-            ];
-            
+            ]);
 
-            setPets(combinedPets.sort(() => Math.random() - 0.5));
+            // Combine pets do Firestore e API
+            const combinedPets = [
+                ...firestorePets.map(pet => ({
+                    ...pet,
+                    image: pet.imageUri || 'https://via.placeholder.com/300', // Use imageUri from Firestore
+                })),
+                ...apiPets,
+            ];
+
+            setPets(combinedPets);
             setLoading(false);
         };
 
         loadPets();
     }, []);
 
-    const handleSwipeRight = (pet) => {
-        navigation.navigate('Chat', { petId: pet.id, petName: pet.name, ownerId: pet.ownerId });
-    };
-    
     const handleSwipe = (cardIndex, direction) => {
         if (cardIndex >= pets.length) return;
         const pet = pets[cardIndex];
     
-        if (direction === 'right') {
-            navigation.navigate('Chat', { pet });
+        // Verifique se o pet e o ownerId estão definidos
+        if (direction === 'right' && pet && pet.ownerId) {
+            navigation.navigate('Chat', { pet, ownerId: pet.ownerId });
+        } else {
+            console.warn('Pet ou ownerId não definidos:', pet);
         }
+    };
+    
+    const loadPets = async () => {
+        const fetchPets = async () => {
+            try {
+                const q = query(collection(db, 'pets'), orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+                return querySnapshot.docs.map(doc => ({
+                    ...doc.data(),
+                    ownerId: doc.id, // Aqui garantimos que o ownerId está sendo definido
+                }));
+            } catch (error) {
+                console.error('Erro ao buscar os pets:', error);
+                return [];
+            }
+        };
+    
+        const firestorePets = await fetchPets();
+        const dogBreeds = await fetchDogs();
+        const catBreeds = await fetchCats();
+        const dogImages = await fetchAllDogImages();
+        const catImages = await fetchAllCatImages();
+    
+        const apiPets = shuffleArray([
+            ...dogBreeds.map((breed, index) => ({
+                id: `dog-${index}`,
+                name: breed.name,
+                species: 'Cachorro',
+                breed: breed.name,
+                age: 'Desconhecida',
+                description: breed.temperament || 'Nenhuma descrição disponível',
+                vaccinated: true,
+                dewormed: true,
+                image: dogImages[index % dogImages.length] || 'https://via.placeholder.com/300',
+                ownerId: 'owner-dog-' + index, // ID fictício para pets da API
+            })),
+            ...catBreeds.map((breed, index) => ({
+                id: `cat-${index}`,
+                name: breed.name,
+                species: 'Gato',
+                breed: breed.name,
+                age: 'Desconhecida',
+                description: breed.temperament || 'Nenhuma descrição disponível',
+                vaccinated: true,
+                dewormed: true,
+                image: catImages[index % catImages.length] || 'https://via.placeholder.com/300',
+                ownerId: 'owner-cat-' + index, // ID fictício para pets da API
+            })),
+        ]);
+    
+        // Combine pets do Firestore e API
+        const combinedPets = [
+            ...firestorePets.map(pet => ({
+                ...pet,
+                image: pet.imageUri || 'https://via.placeholder.com/300', // Use imageUri from Firestore
+            })),
+            ...apiPets,
+        ];
+    
+        setPets(combinedPets);
+        setLoading(false);
     };
     
     
 
-    
+    const navigateToAdoptPet = () => {
+        navigation.navigate('AdotarPet');
+    };
 
     return (
         <View style={styles.container}>
@@ -182,6 +274,9 @@ export default function Adote({ navigation }) {
             ) : (
                 <Text style={styles.noPetsText}>Sem pets disponíveis</Text>
             )}
+            <TouchableOpacity style={styles.cameraButton} onPress={navigateToAdoptPet}>
+                <Ionicons name="camera" size={32} color="#FFF" />
+            </TouchableOpacity>
         </View>
     );
 }
@@ -191,55 +286,61 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff', // Fundo escuro
+        backgroundColor: '#fff',
     },
     card: {
         flex: 1,
         width: Dimensions.get('window').width - 55,
-        backgroundColor: '#593C9D', // Fundo das cartas mais escuro
+        backgroundColor: '#593C9D',
         borderRadius: 10,
         padding: 20,
         margin: 10,
-        borderColor: '#593C9D', // Borda roxa
+        borderColor: '#593C9D',
         borderWidth: 2,
         elevation: 5,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3, // Sombra suavizada
+        shadowOpacity: 0.3,
         shadowRadius: 6,
         position: 'relative',
     },
     image: {
         width: '100%',
         height: 300,
-        borderRadius: 10,
-        marginBottom: 20,
+        borderRadius: 8,
     },
     detailsContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
+        marginTop: 10,
     },
     name: {
         fontSize: 24,
-        fontWeight: 'bold',
-        color: '#FFF', // Texto branco para contraste
-        marginBottom: 10,
+        color: '#FFF',
+        fontFamily: Fonts['poppins-bold'],
     },
     details: {
         fontSize: 16,
-        marginVertical: 2,
-        color: '#E0E0E0', // Texto cinza claro
+        color: '#FFF',
+        fontFamily: Fonts['poppins-regular'],
     },
     description: {
-        fontSize: 14,
         marginTop: 10,
-        color: '#B0B0B0', // Texto cinza ainda mais claro
-        textAlign: 'center',
+        fontSize: 16,
+        color: '#FFF',
+        fontFamily: Fonts['poppins-regular'],
     },
     noPetsText: {
         fontSize: 18,
-        color: '#FFF', // Texto branco
+        color: '#593C9D',
         textAlign: 'center',
-        paddingHorizontal: 20,
+    },
+    cameraButton: {
+        position: 'absolute',
+        bottom: 100,
+        right: 30,
+        backgroundColor: '#7E57C2',
+        borderRadius: 50,
+        padding: 15,
+        elevation: 5,
     },
 });
+

@@ -7,8 +7,8 @@ import Fonts from "../../utils/Fonts";
 const Pets = ({ navigation }) => {
     const [pets, setPets] = useState([]);
     const [loading, setLoading] = useState(true); 
-    const [selectedPet, setSelectedPet] = useState(null); // Estado para o pet selecionado
-    const [modalVisible, setModalVisible] = useState(false); // Estado para controle do modal
+    const [selectedPet, setSelectedPet] = useState(null); 
+    const [modalVisible, setModalVisible] = useState(false); 
 
     useEffect(() => {
         const fetchPets = async () => {
@@ -78,13 +78,13 @@ const Pets = ({ navigation }) => {
     };
 
     const handlePetPress = (pet) => {
-        setSelectedPet(pet); // Define o pet selecionado
-        setModalVisible(true); // Abre o modal
+        setSelectedPet(pet); 
+        setModalVisible(true); 
     };
 
     const closeModal = () => {
-        setModalVisible(false); // Fecha o modal
-        setSelectedPet(null); // Limpa o pet selecionado
+        setModalVisible(false);
+        setSelectedPet(null); 
     };
 
     return (
@@ -111,8 +111,8 @@ const Pets = ({ navigation }) => {
                         keyExtractor={(item) => item.id}
                         renderItem={({ item }) => (
                             <TouchableOpacity 
-                                onPress={() => handlePetPress(item)} // Clicando para abrir o modal
-                                onLongPress={() => handleLongPress(item.id)} // Segurando para excluir
+                                onPress={() => handlePetPress(item)} 
+                                onLongPress={() => handleLongPress(item.id)} 
                                 style={styles.petContainer}
                             >
                                 <Image source={getPetImage(item.species, item.gender)} style={styles.petImage} />
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#FFFFFF',
         borderRadius: 15,
-        elevation: 5, // Adiciona uma sombra para profundidade
+        elevation: 5, 
     },
     modalTitle: {
         fontSize: 24,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     },
     modalText: {
         fontSize: 16,
-        color: '#333', // Cor de texto mais escura para melhor leitura
+        color: '#333', 
         marginBottom: 8,
         fontFamily: Fonts["poppins-regular"],
     },

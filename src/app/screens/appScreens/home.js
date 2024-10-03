@@ -16,8 +16,8 @@ export default function Home() {
     const [pets, setPets] = useState([]);
     const [dogBreeds, setDogBreeds] = useState([]);
     const [catBreeds, setCatBreeds] = useState([]);
-    const [selectedPet, setSelectedPet] = useState(null); // Estado para o pet selecionado
-    const [modalVisible, setModalVisible] = useState(false); // Estado para visibilidade do modal
+    const [selectedPet, setSelectedPet] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false); 
     const [eventType, setEventType] = useState("");
     const [searchTerm, setSearchTerm] = useState('');
 

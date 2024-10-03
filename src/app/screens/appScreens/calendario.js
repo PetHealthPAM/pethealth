@@ -51,16 +51,12 @@ export default function Calendario() {
     { id: '5', name: 'Adicionar Pet', route: 'AdicionarPet' },
     { id: '6', name: 'Meus Pets', route: 'Pets' },
     { id: '7', name: 'Chats', route: 'ChatList' },
-
-    // Adicione mais itens conforme necessário
   ];
 
-  // Função para filtrar os dados com base no termo de pesquisa
   const filteredData = data.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Função para navegar para a tela correta
   const handleNavigation = (route) => {
     navigation.navigate(route);
   };
@@ -226,7 +222,6 @@ export default function Calendario() {
           style={styles.searchInput}
         />
       </View>
-      {/* Lista de resultados filtrados - Apenas aparece se houver algo digitado */}
       {searchTerm.length > 0 && (
         <FlatList
           data={filteredData}
@@ -244,6 +239,7 @@ export default function Calendario() {
       <Calendar
         onDayPress={handleDayPress}
         markedDates={customMarkedDates}
+        
         theme={{
           arrowColor: "#593C9D",
           monthTextColor: "#593C9D",

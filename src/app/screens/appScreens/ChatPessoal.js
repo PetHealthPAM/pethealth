@@ -11,15 +11,14 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Audio from 'expo-av';
 
 const ChatPessoal = ({ route }) => {
-    // Recebe parâmetros da tela anterior
     const { petOwnerName, petOwnerPicture, chatId } = route.params;
-    const [messages, setMessages] = useState([]); // Estado para armazenar as mensagens
-    const [newMessage, setNewMessage] = useState(''); // Estado para armazenar a nova mensagem
-    const [modalVisible, setModalVisible] = useState(false); // Estado para controlar a visibilidade do modal
-    const [recording, setRecording] = useState(false); // Estado para controlar se está gravando
-    const [recordingUri, setRecordingUri] = useState(null); // Estado para armazenar o URI da gravação
+    const [messages, setMessages] = useState([]); 
+    const [newMessage, setNewMessage] = useState(''); 
+    const [modalVisible, setModalVisible] = useState(false); 
+    const [recording, setRecording] = useState(false); 
+    const [recordingUri, setRecordingUri] = useState(null); 
 
-    // Efeito para ouvir as mensagens do chat
+   
     useEffect(() => {
         const messagesRef = collection(db, 'chats', chatId, 'messages');
         const q = query(messagesRef, orderBy('timestamp'));
@@ -32,10 +31,10 @@ const ChatPessoal = ({ route }) => {
             setMessages(messagesArray);
         });
 
-        return () => unsubscribe(); // Limpa a assinatura quando o componente é desmontado
+        return () => unsubscribe(); 
     }, [chatId]);
 
-    // Função para enviar uma nova mensagem
+   
     const handleSend = useCallback(async () => {
         if (newMessage.trim() === '') return;
 
@@ -47,14 +46,14 @@ const ChatPessoal = ({ route }) => {
                 userId: auth.currentUser?.uid,
             });
 
-            setNewMessage(''); // Limpa o campo de entrada após o envio
+            setNewMessage(''); 
         } catch (error) {
             console.error('Erro ao enviar a mensagem:', error);
             Alert.alert('Erro', 'Não foi possível enviar a mensagem. Tente novamente.');
         }
     }, [newMessage, chatId]);
 
-    // Função para iniciar a gravação de áudio
+  
     const handleStartRecording = async () => {
         try {
             const { status } = await Audio.requestPermissionsAsync();
@@ -75,7 +74,7 @@ const ChatPessoal = ({ route }) => {
         }
     };
 
-    // Função para parar a gravação e enviar o áudio
+    
     const handleStopRecording = async () => {
         try {
             if (!recording) return;
@@ -85,7 +84,7 @@ const ChatPessoal = ({ route }) => {
             setRecording(false);
             setRecordingUri(uri);
 
-            // Enviar áudio para o Firebase Storage
+            
             const storage = getStorage();
             const audioRef = ref(storage, `audio/${Date.now()}.m4a`);
             const response = await fetch(uri);
@@ -94,7 +93,7 @@ const ChatPessoal = ({ route }) => {
             await uploadBytes(audioRef, blob);
             const downloadURL = await getDownloadURL(audioRef);
 
-            // Adicionar a URL do áudio ao Firestore
+            
             const messagesRef = collection(db, 'chats', chatId, 'messages');
             await addDoc(messagesRef, {
                 audioUrl: downloadURL,
@@ -107,7 +106,7 @@ const ChatPessoal = ({ route }) => {
         }
     };
 
-    // Função para escolher uma imagem da galeria
+   
     const handlePickImage = async () => {
         try {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -132,7 +131,7 @@ const ChatPessoal = ({ route }) => {
                 await uploadBytes(imageRef, blob);
                 const downloadURL = await getDownloadURL(imageRef);
 
-                // Adicionar a URL da imagem ao Firestore
+                
                 const messagesRef = collection(db, 'chats', chatId, 'messages');
                 await addDoc(messagesRef, {
                     imageUrl: downloadURL,
@@ -146,13 +145,13 @@ const ChatPessoal = ({ route }) => {
         }
     };
 
-    // Função para renderizar cada item de mensagem
+    
     const renderItem = ({ item }) => (
         <View style={[styles.messageContainer, item.userId === auth.currentUser?.uid ? styles.sentMessage : styles.receivedMessage]}>
             {item.text && <Text style={styles.messageText}>{item.text}</Text>}
             {item.imageUrl && <Image source={{ uri: item.imageUrl }} style={styles.messageImage} />}
             {item.audioUrl && (
-                <TouchableOpacity onPress={() => {/* Lógica para reproduzir o áudio */}}>
+                <TouchableOpacity onPress={() => {}}>
                     <Text style={styles.audioText}>🔊 Ouvir áudio</Text>
                 </TouchableOpacity>
             )}

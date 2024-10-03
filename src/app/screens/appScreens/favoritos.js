@@ -4,7 +4,7 @@ import { auth, db } from '../../config/firebaseConfig';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import Fonts from "../../utils/Fonts";
 
-export default function Pets({ navigation }) { // Receba a prop de navegação
+export default function Pets({ navigation }) { 
   const [pets, setPets] = useState([]);
 
   useEffect(() => {

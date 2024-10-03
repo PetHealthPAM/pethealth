@@ -5,7 +5,7 @@ import axios from 'axios';
 import { addDoc, collection } from 'firebase/firestore';
 import { db, auth } from "../../config/firebaseConfig";
 import LoadingScreen from '../../screens/appScreens/LoadingScreen';
-import Fonts from '../../utils/Fonts'; // Importa o componente de carregamento
+import Fonts from '../../utils/Fonts'; 
 
 const API_KEY_DOG = 'live_a18kGWDwOwGdBaVo228FKBjEjHpRxTFT1KCN64vg8autI0DK1fRncxBn53TQa7KL';
 const API_KEY_CAT = 'live_rlswPycwAxMFCNOEuB0Gp9gIik708ockKXnjesGMXgMHyTxeT0LlIbjet3TPQrcM';

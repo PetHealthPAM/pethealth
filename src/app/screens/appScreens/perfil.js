@@ -31,7 +31,7 @@ export default function Perfil({ navigation }) {
   const [gender, setGender] = useState("");
   const [userDoc, setUserDoc] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [imageModalVisible, setImageModalVisible] = useState(false); // Modal para ver imagem ampliada
+  const [imageModalVisible, setImageModalVisible] = useState(false); 
   const [editNameMode, setEditNameMode] = useState(false);
   const [eventType, setEventType] = useState("");
 const [searchTerm, setSearchTerm] = useState('');
@@ -139,7 +139,7 @@ const handleNavigation = (route) => {
     try {
       const userRef = doc(db, "Users", userId);
       await updateDoc(userRef, {
-        imageURL: imageURL,  // Aqui pode ser uma URL ou null
+        imageURL: imageURL, 
       });
       console.log("URL da imagem salva ou removida com sucesso no Firestore.");
     } catch (error) {
@@ -149,7 +149,7 @@ const handleNavigation = (route) => {
   
 
   const btnfavoritos = () => {
-    navigation.navigate('Favoritos'); // O nome deve corresponder exatamente ao nome da tela no navegador
+    navigation.navigate('Favoritos'); 
   };
 
   const showModal = () => {
@@ -162,10 +162,10 @@ const handleNavigation = (route) => {
 
 const hideModal = () => {
   Animated.spring(translateY, {
-    toValue: 100, // Mover para baixo
+    toValue: 100, 
     useNativeDriver: true,
   }).start(() => {
-    setModalVisible(false); // Fecha o modal após a animação
+    setModalVisible(false); 
     setEditNameMode(false);
   });
 };
@@ -180,7 +180,7 @@ const hideModal = () => {
           style={styles.searchInput}
         />
       </View>
-      {/* Lista de resultados filtrados - Apenas aparece se houver algo digitado */}
+      
       {searchTerm.length > 0 && (
         <FlatList
           data={filteredData}
@@ -251,11 +251,11 @@ const hideModal = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Modal para edição do nome ou informações pessoais */}
+      
       <Modal
   transparent={true}
   visible={modalVisible}
-  animationType="slide" // Defina o tipo de animação aqui
+  animationType="slide" 
   onRequestClose={() => {
     setModalVisible(false);
     setEditNameMode(false);
@@ -336,7 +336,7 @@ const hideModal = () => {
         )}
         <View style={styles.modalButtons}>
   <TouchableOpacity
-    style={[styles.button, styles.cancelButton]} // Estilo para o botão "Cancelar"
+    style={[styles.button, styles.cancelButton]}
     onPress={() => {
       setModalVisible(false);
       setEditNameMode(false);
@@ -346,7 +346,7 @@ const hideModal = () => {
   </TouchableOpacity>
 
   <TouchableOpacity
-    style={[styles.button, styles.saveButton]} // Estilo para o botão "Salvar"
+    style={[styles.button, styles.saveButton]}
     onPress={saveUserInfo}
   >
     <Text style={styles.buttonText}>Salvar</Text>
@@ -358,7 +358,7 @@ const hideModal = () => {
 </Modal>
 
 
-      {/* Modal para ver a imagem ampliada */}
+     
       <Modal
   transparent={true}
   visible={imageModalVisible}
@@ -371,7 +371,7 @@ const hideModal = () => {
         style={styles.enlargedImage}
       />
       
-      {/* Botão para editar a imagem */}
+    
       <TouchableOpacity
         style={styles.pencilButton}
         onPress={() => {
@@ -382,19 +382,17 @@ const hideModal = () => {
         <Feather name="edit-2" size={24} color="#fff" />
       </TouchableOpacity>
 
-      {/* Botão "X" para remover a imagem */}
+  
       <TouchableOpacity
         style={styles.removeButton}
         onPress={async () => {
           setImage(null);
           setImageModalVisible(false);
-          await saveImageURLToFirestore(auth.currentUser.uid, null); // Remover a imagem no Firestore
+          await saveImageURLToFirestore(auth.currentUser.uid, null); 
         }}
       >
         <Feather name="x" size={26} color={'white'}/>
       </TouchableOpacity>
-
-      {/* Botão para fechar o modal */}
       <Button
         title="Fechar"
         onPress={() => setImageModalVisible(false)}
@@ -458,6 +456,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginRight: 20,
     marginLeft: 20,
+    borderWidth: 2,
+    borderColor: "#7E57C2", 
   },
   profileDetails: {
     flexDirection: "row",
@@ -528,8 +528,8 @@ modalButtons: {
   marginTop: 20,
 },
 button: {
-  paddingVertical: 10, // Aumenta a altura do botão
-  paddingHorizontal: 20, // Aumenta a largura do botão
+  paddingVertical: 10,
+  paddingHorizontal: 20, 
   borderRadius: 10,
 },
 cancelButton: {
@@ -537,12 +537,12 @@ cancelButton: {
 },
 saveButton: {
   backgroundColor: '#593C9D',
-  marginLeft: 15, // Cor para o botão "Salvar"
+  marginLeft: 15, 
 },
 buttonText: {
-  color: '#fff', // Cor do texto
-  fontSize: 18, // Tamanho da fonte
-  fontFamily: Fonts["poppins-bold"], // Substitua pelo nome da sua fonte
+  color: '#fff', 
+  fontSize: 18,
+  fontFamily: Fonts["poppins-bold"], 
   textAlign: 'center',
 },
   imageModalContent: {
@@ -564,34 +564,34 @@ buttonText: {
   },
   removeButton: {
     position: 'absolute',
-    top: 20, // Ajuste conforme a necessidade
-    right: 20, // Mantém o botão no canto superior direito
-    backgroundColor: '#FF6347', // Cor de fundo vermelha (ou qualquer cor que combine com seu design)
-    borderRadius: 50, // Torna o botão circular
-    padding: 10, // Adiciona preenchimento para aumentar a área clicável
+    top: 20, 
+    right: 20, 
+    backgroundColor: '#FF6347', 
+    borderRadius: 50, 
+    padding: 10, 
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5, // Sombras no Android
-    shadowColor: '#000', // Cor da sombra no iOS
-    shadowOffset: { width: 0, height: 2 }, // Posição da sombra no iOS
-    shadowOpacity: 0.25, // Opacidade da sombra no iOS
-    shadowRadius: 3.84, // Raio da sombra no iOS
-    zIndex: 10, // Garante que o botão fique acima de outros elementos
+    elevation: 5, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.25, 
+    shadowRadius: 3.84, 
+    zIndex: 10, 
   },
   removeIcon: {
-    fontSize: 18, // Tamanho do ícone "X"
-    color: '#FFF', // Cor do "X"
-    fontWeight: 'bold', // Destaca o "X"
+    fontSize: 18, 
+    color: '#FFF', 
+    fontWeight: 'bold', 
   },
   searchInput: {
-    flex: 1,
-           height: 40,
-           backgroundColor: '#fff',
-           borderRadius: 20,
-           paddingHorizontal: 15,
-           marginLeft: 5,
-           marginTop: 25,
-           fontFamily: Fonts["poppins-regular"],
+  flex: 1,
+  height: 40,
+  backgroundColor: '#fff',
+  borderRadius: 20,
+  paddingHorizontal: 15,
+  marginLeft: 5,
+  marginTop: 25,
+  fontFamily: Fonts["poppins-regular"],
  },
  suggestionItem: {
    backgroundColor: "#EEE",

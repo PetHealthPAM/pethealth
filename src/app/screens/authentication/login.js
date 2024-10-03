@@ -4,35 +4,35 @@ import { auth } from "../../config/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import Fonts from "../../utils/Fonts";
 import { useNavigation } from "@react-navigation/native";
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Adicione isso para os ícones
+import Icon from 'react-native-vector-icons/MaterialIcons'; 
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [loading, setLoading] = useState(false); // Estado para controlar o carregamento
-  const [showPassword, setShowPassword] = useState(false); // Estado para controlar a visibilidade da senha
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = () => {
-    setLoading(true); // Inicia o carregamento
+    setLoading(true); 
     signInWithEmailAndPassword(auth, email, senha)
       .then((userCredential) => {
         const user = userCredential.user;
-        setLoading(false); // Para o carregamento
+        setLoading(false); 
         if (user.emailVerified) {
           console.log(user);
           setEmail("");
           setSenha("");
           navigation.reset({
             index: 0,
-            routes: [{ name: 'TabBar' }], // Substitua 'TabBar' pelo nome da sua tela inicial
+            routes: [{ name: 'TabBar' }], 
           });
         } else {
           Alert.alert("Email ainda não verificado!");
         }
       })
       .catch((error) => {
-        setLoading(false); // Para o carregamento
+        setLoading(false); 
         const errorMessage = error.message;
         Alert.alert("Erro", errorMessage);
       });
