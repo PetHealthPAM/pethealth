@@ -131,13 +131,17 @@ export default function Adote({ navigation }) {
         if (cardIndex >= pets.length) return;
         const pet = pets[cardIndex];
     
-        // Verifique se o pet e o ownerId estão definidos
-        if (direction === 'right' && pet && pet.ownerId) {
-            navigation.navigate('Chat', { pet, ownerId: pet.ownerId });
-        } else {
-            console.warn('Pet ou ownerId não definidos:', pet);
+        if (direction === 'right') {
+            // Verifique se o pet e o ownerId estão definidos antes de navegar
+            if (pet && pet.ownerId) {
+                navigation.navigate('Chat', { pet, ownerId: pet.ownerId });
+            } else {
+                console.warn('Pet ou ownerId não definidos:', pet);
+            }
         }
+        // Nenhuma ação necessária para swipes para a esquerda
     };
+    
     
     const loadPets = async () => {
         const fetchPets = async () => {

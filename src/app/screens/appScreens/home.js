@@ -414,6 +414,8 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
+        borderWidth: 2,   
+        borderColor: '#593C9D', 
     },
     petName: {
         textAlign: 'center',
@@ -455,6 +457,8 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         marginBottom: 5,
+        borderWidth: 2,   
+        borderColor: '#FFFFFF', 
     },
     breedName: {
         fontSize: 12,

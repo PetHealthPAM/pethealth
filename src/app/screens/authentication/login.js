@@ -1,10 +1,14 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import { auth } from "../../config/firebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithCredential } from "firebase/auth";
+import * as Google from 'expo-auth-session/providers/google';  // Biblioteca para Google Auth
+import * as WebBrowser from 'expo-web-browser';  // Necessário para login web do Google
 import Fonts from "../../utils/Fonts";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
+
+WebBrowser.maybeCompleteAuthSession();  // Completa sessões de login em dispositivos móveis
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,6 +16,35 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    expoClientId: 'YOUR_EXPO_CLIENT_ID.apps.googleusercontent.com',  // Substitua pelo seu Client ID
+    androidClientId: 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com',  // Substitua pelo seu Client ID Android
+    iosClientId: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',  // Substitua pelo seu Client ID iOS
+    scopes: ['profile', 'email'],
+  });
+
+  // Função para logar com Google
+  const handleGoogleSignIn = async () => {
+    const result = await promptAsync();
+    if (result.type === 'success') {
+      const { id_token } = result.params;
+      const credential = GoogleAuthProvider.credential(id_token);
+      signInWithCredential(auth, credential)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log("Login com Google bem-sucedido!", user);
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'TabBar' }], 
+          });
+        })
+        .catch((error) => {
+          console.log("Erro ao logar com Google", error);
+          Alert.alert("Erro", error.message);
+        });
+    }
+  };
 
   const handleLogin = () => {
     setLoading(true); 
@@ -41,7 +74,6 @@ export default function Login() {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
-
         <TouchableOpacity onPress={() => navigation.navigate("Inicial")}>
           <View style={styles.containervoltar}>
             <Image source={require('../../../../assets/img/voltar.png')} style={styles.BNTvoltar} />
@@ -91,7 +123,7 @@ export default function Login() {
         </View>
 
         <View style={styles.contGoogle}>
-          <TouchableOpacity style={styles.googleButton}>
+          <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn} disabled={!request}>
             <Image source={require("../../../../assets/img/google.png")} style={styles.logogoogle} />
             <Text style={styles.googleButtonText}>Entrar com Google</Text>
           </TouchableOpacity>
@@ -115,6 +147,7 @@ export default function Login() {
     </ScrollView >
   );
 }
+
 
 const styles = StyleSheet.create({
   scrollContainer: {
