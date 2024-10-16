@@ -152,18 +152,6 @@ export default function Cadastro({ navigation }) {
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.orContainer}>
-        <Text style={styles.orText}>――  OU  ――</Text>
-      </View>
-      <View style={styles.contGoogle}>
-        <TouchableOpacity style={styles.googleButton}>
-          <Image
-            source={require("../../../../assets/img/google.png")}
-            style={styles.logogoogle}
-          />
-          <Text style={styles.googleButtonText}>Entrar com Google</Text>
-        </TouchableOpacity>
-      </View>
 
       {loading && (
         <View style={styles.loadingOverlay}>

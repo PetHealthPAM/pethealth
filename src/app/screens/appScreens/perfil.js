@@ -37,7 +37,7 @@ export default function Perfil({ navigation }) {
 const [searchTerm, setSearchTerm] = useState('');
 
 const data = [
-  { id: '1', name: 'Calendário', route: 'calendario' },
+  { id: '1', name: 'Calendário', route: 'calendário' },
   { id: '2', name: 'Perfil', route: 'perfil' },
   { id: '3', name: 'Home', route: 'home' },
   { id: '4', name: 'Adote', route: 'adote' },

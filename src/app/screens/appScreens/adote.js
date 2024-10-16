@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../../config/firebaseConfig';
 import Fonts from "../../utils/Fonts";
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const DOG_BREEDS_URL = 'https://api.thedogapi.com/v1/breeds';
 const CAT_BREEDS_URL = 'https://api.thecatapi.com/v1/breeds';
@@ -210,141 +211,191 @@ export default function Adote({ navigation }) {
         navigation.navigate('AdotarPet');
     };
 
+    const navigateToChat = () => {
+        navigation.navigate('ChatList');
+    };
+    
     return (
         <View style={styles.container}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.containervoltar}>
+                <Image source={require('../../../../assets/img/voltar.png')} style={styles.BNTvoltar} />
+                <Text style={styles.txtvoltar}> Voltar </Text>
+            </TouchableOpacity>
+    
             {loading ? (
                 <ActivityIndicator size="large" color="#593C9D" />
             ) : pets.length > 0 ? (
-                <Swiper
-                    cards={pets}
-                    renderCard={(pet) => (
-                        <View style={styles.card}>
-                            <Image source={{ uri: pet.image }} style={styles.image} />
-                            <View style={styles.detailsContainer}>
-                                <Text style={styles.name}>{pet.name}</Text>
-                                <Text style={styles.details}>Espécie: {pet.species}</Text>
-                                <Text style={styles.details}>Raça: {pet.breed}</Text>
-                                <Text style={styles.details}>Idade: {pet.age}</Text>
-                                <Text style={styles.description}>Descrição: {pet.description}</Text>
+                <>
+                    <Swiper
+                        cards={pets}
+                        renderCard={(pet) => (
+                            <View style={styles.card}>
+                                <Image source={{ uri: pet.image }} style={styles.image} />
+                                <View style={styles.detailsContainer}>
+                                    <Text style={styles.name}>{pet.name}</Text>
+                                    <Text style={styles.details}>Espécie: {pet.species}</Text>
+                                    <Text style={styles.details}>Raça: {pet.breed}</Text>
+                                    <Text style={styles.details}>Idade: {pet.age}</Text>
+                                    <Text style={styles.description}>Descrição: {pet.description}</Text>
+                                </View>
                             </View>
-                        </View>
-                    )}
-                    onSwipedLeft={(cardIndex) => handleSwipe(cardIndex, 'left')}
-                    onSwipedRight={(cardIndex) => handleSwipe(cardIndex, 'right')}
-                    cardIndex={0}
-                    backgroundColor={'#f3f3f3'}
-                    stackSize={3}
-                    overlayLabels={{
-                        left: {
-                            title: 'NÃO',
-                            style: {
-                                label: {
-                                    backgroundColor: '#FF4C4C',
-                                    borderColor: '#FF4C4C',
-                                    color: 'white',
-                                    borderWidth: 1,
-                                    fontSize: 24,
-                                },
-                                wrapper: {
-                                    flexDirection: 'column',
-                                    alignItems: 'flex-end',
-                                    justifyContent: 'flex-start',
-                                    marginTop: 30,
-                                    marginLeft: -30,
-                                },
-                            },
-                        },
-                        right: {
-                            title: 'SIM',
-                            style: {
-                                label: {
-                                    backgroundColor: '#593C9D',
-                                    borderColor: '#593C9D',
-                                    color: 'white',
-                                    borderWidth: 1,
-                                    fontSize: 24,
-                                },
-                                wrapper: {
-                                    flexDirection: 'column',
-                                    alignItems: 'flex-start',
-                                    justifyContent: 'flex-start',
-                                    marginTop: 30,
-                                    marginLeft: 30,
+                        )}
+                        onSwipedLeft={(cardIndex) => handleSwipe(cardIndex, 'left')}
+                        onSwipedRight={(cardIndex) => handleSwipe(cardIndex, 'right')}
+                        cardIndex={0}
+                        backgroundColor={'#f3f3f3'}
+                        stackSize={3}
+                        overlayLabels={{
+                            left: {
+                                title: 'PASSAR',
+                                style: {
+                                    label: {
+                                        backgroundColor: '#FF4C4C',
+                                        borderColor: '#FF4C4C',
+                                        color: 'white',
+                                        borderWidth: 1,
+                                        fontSize: 24,
+                                    },
+                                    wrapper: {
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-end',
+                                        justifyContent: 'flex-start',
+                                        marginTop: 30,
+                                        marginLeft: -30,
+                                    },
                                 },
                             },
-                        },
-                    }}
-                />
+                            right: {
+                                title: 'ADOTAR',
+                                style: {
+                                    label: {
+                                        backgroundColor: '#593C9D',
+                                        borderColor: '#593C9D',
+                                        color: 'white',
+                                        borderWidth: 1,
+                                        fontSize: 24,
+                                    },
+                                    wrapper: {
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        justifyContent: 'flex-start',
+                                        marginTop: 30,
+                                        marginLeft: 30,
+                                    },
+                                },
+                            },
+                        }}
+                    />
+                </>
             ) : (
                 <Text style={styles.noPetsText}>Sem pets disponíveis</Text>
             )}
+            <TouchableOpacity style={styles.chatButton} onPress={navigateToChat}>
+                <Ionicons name="chatbubble-ellipses" size={42} color="#7E57C2" />
+            </TouchableOpacity>
             <TouchableOpacity style={styles.cameraButton} onPress={navigateToAdoptPet}>
-                <Ionicons name="camera" size={32} color="#FFF" />
+                <Ionicons name="camera" size={38} color="#FFF" />
             </TouchableOpacity>
         </View>
     );
-}
+    
+    
+    }
+    
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#fff',
+        },
+        card: {
+            flex: 1,
+            width: Dimensions.get('window').width - 55,
+            backgroundColor: '#593C9D',
+            borderRadius: 10,
+            padding: 20,
+            margin: 10,
+            borderColor: '#593C9D',
+            borderWidth: 2,
+            elevation: 5,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 6,
+            position: 'relative',
+            marginTop: 50,
+        },
+        image: {
+            width: '100%',
+            height: 300,
+            borderRadius: 8,
+        },
+        detailsContainer: {
+            marginTop: 10,
+        },
+        name: {
+            fontSize: 24,
+            color: '#FFF',
+            fontFamily: Fonts['poppins-bold'],
+        },
+        details: {
+            fontSize: 16,
+            color: '#FFF',
+            fontFamily: Fonts['poppins-regular'],
+        },
+        description: {
+            marginTop: 10,
+            fontSize: 16,
+            color: '#FFF',
+            fontFamily: Fonts['poppins-regular'],
+        },
+        noPetsText: {
+            fontSize: 18,
+            color: '#593C9D',
+            textAlign: 'center',
+        },
+        cameraButton: {
+            position: 'absolute',
+            bottom: 20,
+            right: 20,
+            backgroundColor: '#7E57C2',
+            borderRadius: 50,
+            padding: 15,
+            elevation: 5,
+        },
+        chatButton: {
+            position: 'absolute',
+            top: 35,
+            right: 15,
+            backgroundColor: 'transparent',
+            borderRadius: 50,
+            padding: 10,
+        },
+        BNTvoltar: {
+            width: 30,
+            height: 30,
+            resizeMode: 'contain',
+            marginTop: 10,
+            marginLeft: 10,
+        },
+        txtvoltar: {
+            fontFamily: Fonts['poppins-black'],
+            fontSize: 16,
+            color: '#7E57C2',
+            marginTop: 5,
+            textAlign: 'left',
+        },
+        containervoltar: {
+            position: 'absolute', 
+            top: 25, 
+            left: 20,
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            zIndex: 10, 
+        },
+        
+        
+    });
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
-    card: {
-        flex: 1,
-        width: Dimensions.get('window').width - 55,
-        backgroundColor: '#593C9D',
-        borderRadius: 10,
-        padding: 20,
-        margin: 10,
-        borderColor: '#593C9D',
-        borderWidth: 2,
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 6,
-        position: 'relative',
-    },
-    image: {
-        width: '100%',
-        height: 300,
-        borderRadius: 8,
-    },
-    detailsContainer: {
-        marginTop: 10,
-    },
-    name: {
-        fontSize: 24,
-        color: '#FFF',
-        fontFamily: Fonts['poppins-bold'],
-    },
-    details: {
-        fontSize: 16,
-        color: '#FFF',
-        fontFamily: Fonts['poppins-regular'],
-    },
-    description: {
-        marginTop: 10,
-        fontSize: 16,
-        color: '#FFF',
-        fontFamily: Fonts['poppins-regular'],
-    },
-    noPetsText: {
-        fontSize: 18,
-        color: '#593C9D',
-        textAlign: 'center',
-    },
-    cameraButton: {
-        position: 'absolute',
-        bottom: 100,
-        right: 30,
-        backgroundColor: '#7E57C2',
-        borderRadius: 50,
-        padding: 15,
-        elevation: 5,
-    },
-});
-
+    

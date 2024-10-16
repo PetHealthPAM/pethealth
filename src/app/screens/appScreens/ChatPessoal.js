@@ -3,22 +3,24 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Keyboard
 import { collection, query, onSnapshot, addDoc, orderBy } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, auth } from '../../config/firebaseConfig';
-import moment from 'moment'; // Biblioteca para formatação de data e hora
+import moment from 'moment'; 
 import Fonts from "../../utils/Fonts";
 import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
-import * as Audio from 'expo-av';
+import { Audio } from 'expo-av'; 
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const ChatPessoal = ({ route }) => {
     const { petOwnerName, petOwnerPicture, chatId } = route.params;
     const [messages, setMessages] = useState([]); 
     const [newMessage, setNewMessage] = useState(''); 
     const [modalVisible, setModalVisible] = useState(false); 
-    const [recording, setRecording] = useState(false); 
-    const [recordingUri, setRecordingUri] = useState(null); 
+    const [recording, setRecording] = useState(null); 
+    const [recordingUri, setRecordingUri] = useState(null);
+    const [imageModalVisible, setImageModalVisible] = useState(false);
+    const [selectedImageUrl, setSelectedImageUrl] = useState(null);
 
-   
     useEffect(() => {
         const messagesRef = collection(db, 'chats', chatId, 'messages');
         const q = query(messagesRef, orderBy('timestamp'));
@@ -34,7 +36,6 @@ const ChatPessoal = ({ route }) => {
         return () => unsubscribe(); 
     }, [chatId]);
 
-   
     const handleSend = useCallback(async () => {
         if (newMessage.trim() === '') return;
 
@@ -53,20 +54,24 @@ const ChatPessoal = ({ route }) => {
         }
     }, [newMessage, chatId]);
 
-  
     const handleStartRecording = async () => {
+        if (recording) {
+            Alert.alert('Já existe uma gravação em andamento.');
+            return;
+        }
+
         try {
-            const { status } = await Audio.requestPermissionsAsync();
-            if (status !== 'granted') {
+            const permission = await Audio.requestPermissionsAsync();
+            if (!permission.granted) {
                 Alert.alert('Permissão para usar o microfone é necessária!');
                 return;
             }
 
-            const recording = new Audio.Recording();
-            await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HighQuality);
-            await recording.startAsync();
+            const { recording } = await Audio.Recording.createAsync(
+                Audio.RecordingOptionsPresets.HIGH_QUALITY
+            );
 
-            setRecording(true);
+            setRecording(recording);
             setRecordingUri(null);
         } catch (error) {
             console.error('Erro ao iniciar a gravação:', error);
@@ -74,17 +79,15 @@ const ChatPessoal = ({ route }) => {
         }
     };
 
-    
     const handleStopRecording = async () => {
-        try {
-            if (!recording) return;
+        if (!recording) return;
 
+        try {
             await recording.stopAndUnloadAsync();
             const uri = recording.getURI();
-            setRecording(false);
+            setRecording(null);
             setRecordingUri(uri);
 
-            
             const storage = getStorage();
             const audioRef = ref(storage, `audio/${Date.now()}.m4a`);
             const response = await fetch(uri);
@@ -93,7 +96,6 @@ const ChatPessoal = ({ route }) => {
             await uploadBytes(audioRef, blob);
             const downloadURL = await getDownloadURL(audioRef);
 
-            
             const messagesRef = collection(db, 'chats', chatId, 'messages');
             await addDoc(messagesRef, {
                 audioUrl: downloadURL,
@@ -106,7 +108,6 @@ const ChatPessoal = ({ route }) => {
         }
     };
 
-   
     const handlePickImage = async () => {
         try {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -122,16 +123,15 @@ const ChatPessoal = ({ route }) => {
                 quality: 1,
             });
 
-            if (!result.cancelled) {
+            if (!result.canceled) {
                 const storage = getStorage();
                 const imageRef = ref(storage, `images/${Date.now()}.jpg`);
-                const response = await fetch(result.uri);
+                const response = await fetch(result.assets[0].uri);
                 const blob = await response.blob();
 
                 await uploadBytes(imageRef, blob);
                 const downloadURL = await getDownloadURL(imageRef);
 
-                
                 const messagesRef = collection(db, 'chats', chatId, 'messages');
                 await addDoc(messagesRef, {
                     imageUrl: downloadURL,
@@ -145,14 +145,29 @@ const ChatPessoal = ({ route }) => {
         }
     };
 
-    
+    const handlePlayAudio = async (audioUrl) => {
+        const { sound } = await Audio.Sound.createAsync(
+            { uri: audioUrl }
+        );
+        await sound.playAsync();
+    };
+
+    const handleOpenImageModal = (imageUrl) => {
+        setSelectedImageUrl(imageUrl);
+        setImageModalVisible(true);
+    };
+
     const renderItem = ({ item }) => (
         <View style={[styles.messageContainer, item.userId === auth.currentUser?.uid ? styles.sentMessage : styles.receivedMessage]}>
             {item.text && <Text style={styles.messageText}>{item.text}</Text>}
-            {item.imageUrl && <Image source={{ uri: item.imageUrl }} style={styles.messageImage} />}
+            {item.imageUrl && (
+                <TouchableOpacity onPress={() => handleOpenImageModal(item.imageUrl)}>
+                    <Image source={{ uri: item.imageUrl }} style={styles.messageImage} />
+                </TouchableOpacity>
+            )}
             {item.audioUrl && (
-                <TouchableOpacity onPress={() => {}}>
-                    <Text style={styles.audioText}>🔊 Ouvir áudio</Text>
+                <TouchableOpacity onPress={() => handlePlayAudio(item.audioUrl)}>
+                    <Text style={styles.audioText}>⏯ Ouvir Aúdio</Text>
                 </TouchableOpacity>
             )}
             <Text style={styles.messageTime}>
@@ -189,12 +204,19 @@ const ChatPessoal = ({ route }) => {
                     onChangeText={setNewMessage}
                     placeholder="Mensagem"
                 />
-                <TouchableOpacity 
-                    onPress={newMessage.trim() !== '' ? handleSend : (recording ? handleStopRecording : handleStartRecording)} 
+                <TouchableOpacity
+                    onPressIn={handleStartRecording}
+                    onPressOut={handleStopRecording}
                     style={styles.sendButton}
                 >
                     <Text style={styles.sendButtonText}>
-                        {newMessage.trim() !== '' ? <Feather name="send" size={24} color="white" /> : (recording ? <MaterialIcons name="stop" size={24} color="white" /> : <MaterialIcons name="mic" size={24} color="white" />)}
+                        {newMessage.trim() !== '' ? (
+                            <Feather name="send" size={24} color="white" />
+                        ) : recording ? (
+                            <MaterialIcons name="stop" size={24} color="white" />
+                        ) : (
+                            <Feather name="mic" size={24} color="white" />
+                        )}
                     </Text>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
@@ -212,6 +234,17 @@ const ChatPessoal = ({ route }) => {
                             <Text style={styles.modalCloseButtonText}>Fechar</Text>
                         </TouchableOpacity>
                     </View>
+                </View>
+            </Modal>
+            <Modal
+                transparent={true}
+                visible={imageModalVisible}
+                onRequestClose={() => setImageModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <Pressable onPress={() => setImageModalVisible(false)} style={styles.modalOverlay}>
+                        <Image source={{ uri: selectedImageUrl }} style={styles.fullScreenImage} />
+                    </Pressable>
                 </View>
             </Modal>
         </View>
@@ -246,54 +279,15 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 18,
         color: '#fff',
-        fontFamily: Fonts['poppins-medium'],
-    },
-    messageContainer: {
-        padding: 10,
-        borderRadius: 20,
-        margin: 5,
-        maxWidth: '80%',
-        alignSelf: 'flex-start',
-    },
-    sentMessage: {
-        backgroundColor: '#dcf8c6',
-        alignSelf: 'flex-end',
-    },
-    receivedMessage: {
-        backgroundColor: '#fff',
-        borderColor: '#ddd',
-        borderWidth: 1,
-        alignSelf: 'flex-start',
-    },
-    messageText: {
-        fontSize: 16,
-        color: '#000',
-        fontFamily: Fonts['poppins-regular'],
-    },
-    messageImage: {
-        width: 200,
-        height: 200,
-        borderRadius: 10,
-        marginVertical: 5,
-    },
-    audioText: {
-        fontSize: 16,
-        color: '#007bff',
-        marginVertical: 5,
-    },
-    messageTime: {
-        fontSize: 12,
-        color: '#666',
-        marginTop: 5,
-        alignSelf: 'flex-end',
+        fontFamily: Fonts.Bold,
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
+        backgroundColor: 'transparent',
         borderTopWidth: 1,
         borderTopColor: '#ddd',
-        backgroundColor: 'transparent',
     },
     input: {
         flex: 1,
@@ -301,7 +295,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 20,
         padding: 10,
-        marginHorizontal: 10,
+        marginRight: 10,
         backgroundColor: '#f5f5f5',
     },
     sendButton: {
@@ -318,6 +312,39 @@ const styles = StyleSheet.create({
     },
     iconButton: {
         marginRight: 10,
+    },
+    messageContainer: {
+        marginVertical: 5,
+        padding: 10,
+        borderRadius: 10,
+        maxWidth: '70%',
+    },
+    sentMessage: {
+        alignSelf: 'flex-end',
+        backgroundColor: '#d1f7c4',
+    },
+    receivedMessage: {
+        alignSelf: 'flex-start',
+        backgroundColor: '#fff',
+    },
+    messageText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    messageImage: {
+        width: 150,
+        height: 150,
+        borderRadius: 10,
+    },
+    audioText: {
+        color: '#7E57C2',
+        fontWeight: 'bold',
+    },
+    messageTime: {
+        fontSize: 12,
+        color: '#999',
+        textAlign: 'right',
+        marginTop: 5,
     },
     modalOverlay: {
         flex: 1,
@@ -336,23 +363,26 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        marginBottom: 10,
     },
     modalUserName: {
         fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 20,
+        color: '#333',
+        marginVertical: 10,
     },
     modalCloseButton: {
+        padding: 10,
+        borderRadius: 5,
+        backgroundColor: '#593C9D',
         marginTop: 20,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        backgroundColor: '#7E57C2',
-        borderRadius: 20,
     },
     modalCloseButtonText: {
         color: '#fff',
         fontSize: 16,
+    },
+    fullScreenImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
     },
 });
 

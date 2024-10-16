@@ -38,6 +38,7 @@ export default function Routes() {
       <Stack.Screen name="ChatList" component={ChatList} />
       <Stack.Screen name="ChatPessoal" component={ChatPessoal} />
       <Stack.Screen name="AdotarPet" component={AdotarPet} />
+      <Stack.Screen name="Adote" component={Adote} />
     </Stack.Navigator>
   );
 }
@@ -48,9 +49,9 @@ function TabBar() {
       screenOptions={({ route }) => ({
         tabBarActiveTintColor: "#593C9D",
         tabBarInactiveTintColor: "#000",
-        tabBarStyle: styles.tabBarStyle,
+        tabBarStyle: route.name === "adote" ? { display: 'none' } : styles.tabBarStyle, // Aqui está a mudança
         tabBarIcon: ({ focused, color }) => {
-          const iconSize = 30; // Define um tamanho fixo para todos os ícones
+          const iconSize = 30; 
           let iconName;
 
           switch (route.name) {
@@ -92,7 +93,7 @@ function TabBar() {
       />
       <Tab.Screen
         name="adote"
-        component={Adote}
+        component={Adote} // Mantendo a estrutura original
         options={{ headerShown: false }}
       />
       <Tab.Screen
@@ -101,6 +102,18 @@ function TabBar() {
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
+  );
+}
+
+
+// Stack para a tela Adote
+function AdoteStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Adote" component={Adote} />
+      <Stack.Screen name="AdotarPet" component={AdotarPet} />
+      {/* Adicione outras telas que você deseja dentro do stack de Adote */}
+    </Stack.Navigator>
   );
 }
 

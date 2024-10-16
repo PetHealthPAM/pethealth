@@ -18,9 +18,8 @@ export default function Login() {
   const navigation = useNavigation();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: 'YOUR_EXPO_CLIENT_ID.apps.googleusercontent.com',  // Substitua pelo seu Client ID
-    androidClientId: 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com',  // Substitua pelo seu Client ID Android
-    iosClientId: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',  // Substitua pelo seu Client ID iOS
+    expoClientId: '796451017519-9h76c2g778qhacl5ddkk98htgvhufscl.apps.googleusercontent.com', 
+    androidClientId: '796451017519-f66folpt0uktdp763udpacd2ce4od9a4.apps.googleusercontent.com',  // Substitua pelo seu Client ID Android
     scopes: ['profile', 'email'],
   });
 
@@ -122,12 +121,7 @@ export default function Login() {
           <Text style={styles.orText}>――  OU  ――</Text>
         </View>
 
-        <View style={styles.contGoogle}>
-          <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn} disabled={!request}>
-            <Image source={require("../../../../assets/img/google.png")} style={styles.logogoogle} />
-            <Text style={styles.googleButtonText}>Entrar com Google</Text>
-          </TouchableOpacity>
-        </View>
+       
 
         <View style={styles.containlogo}>
           <TouchableOpacity onPress={() => navigation.navigate("Cadastro")}>
@@ -223,7 +217,6 @@ const styles = StyleSheet.create({
   },
   titulo: {
     fontSize: 18,
-    marginTop: 20,
     fontFamily: Fonts["poppins-regular"],
   },
   link: {
